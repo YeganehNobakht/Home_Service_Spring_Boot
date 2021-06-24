@@ -1,20 +1,22 @@
 package ir.maktab.service.dto;
 
+import ir.maktab.service.dto.enums.UserRole;
+
 /**
  * @author Yeganeh Nobakht
  **/
 public class UserFilter {
-    private String userRole;
+    private UserRole userRole;
     private String name;
     private String lastName;
     private String Email;
     private String speciality;
 
-    public String getUserRole() {
+    public UserRole getUserRole() {
         return userRole;
     }
 
-    public UserFilter setUserRole(String userRole) {
+    public UserFilter setUserRole(UserRole userRole) {
         this.userRole = userRole;
         return this;
     }
