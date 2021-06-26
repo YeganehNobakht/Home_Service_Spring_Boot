@@ -7,6 +7,7 @@ import ir.maktab.homeservices.dto.UserFilter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -16,10 +17,15 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecificationExecutor<User> {
-//    List<UserDto> filterUser(UserDto userDto);
+
+    @Query("SELECT u FROM User u WHERE u.verificationCode = ?1")
+    public User findByVerificationCode(String code);
+
+    Optional<User> findByUsername(String username);
 
     static Specification<User> filterUsers(UserFilter user, ServiceCategory serviceCategory) {
         return (Specification<User>) (root, query, criteriaBuilder) -> {
@@ -58,4 +64,6 @@ public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecifi
             return userCriteriaQuery.where(predicates.toArray(new Predicate[0])).getRestriction();
         };
     }
+
+
 }
