@@ -166,4 +166,15 @@ public class Specialist extends User {
         this.commentCounter = commentCounter;
         return this;
     }
+    @Override
+    public Specialist setVerificationCode(String verificationCode) {
+        super.setVerificationCode(verificationCode);
+        return this;
+    }
+
+    @Override
+    public Specialist setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        return this;
+    }
 }

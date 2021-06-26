@@ -32,12 +32,25 @@ public class SpecialistDto extends UserDto {
         return this;
     }
 
+
     public List<ServiceCategoryDto> getServiceCategoryList() {
         return serviceCategoryList;
     }
 
     public SpecialistDto setServiceCategoryList(List<ServiceCategoryDto> serviceCategoryList) {
         this.serviceCategoryList = serviceCategoryList;
+        return this;
+    }
+
+    @Override
+    public SpecialistDto setSpeciality(String speciality) {
+        super.setSpeciality(speciality);
+        return this;
+    }
+
+    @Override
+    public SpecialistDto setBalance(double balance) {
+        super.setBalance(balance);
         return this;
     }
 
@@ -134,6 +147,17 @@ public class SpecialistDto extends UserDto {
 
     public SpecialistDto setCommentCounter(Integer commentCounter) {
         this.commentCounter = commentCounter;
+        return this;
+    }
+    @Override
+    public SpecialistDto setVerificationCode(String verificationCode) {
+        super.setVerificationCode(verificationCode);
+        return this;
+    }
+
+    @Override
+    public SpecialistDto setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
         return this;
     }
 }
