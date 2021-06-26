@@ -8,14 +8,23 @@ import ir.maktab.homeservices.data.repository.specialist.SpecialistRepository;
 import ir.maktab.homeservices.dto.ServiceCategoryDto;
 import ir.maktab.homeservices.dto.SpecialistDto;
 import ir.maktab.homeservices.dto.SpecialistSignUpDto;
+import ir.maktab.homeservices.dto.UserFilter;
 import ir.maktab.homeservices.exceptions.checkes.DuplicateEmailException;
 import ir.maktab.homeservices.exceptions.checkes.DuplicateUsernameException;
+import ir.maktab.homeservices.exceptions.checkes.ServiceNotFoundException;
 import ir.maktab.homeservices.exceptions.checkes.SpecialistNotFoundException;
 import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
 import ir.maktab.homeservices.service.mapper.Mapper;
+import ir.maktab.homeservices.service.serviceCategory.ServiceCategoryService;
+import ir.maktab.homeservices.service.userService.UserService;
+import net.bytebuddy.utility.RandomString;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -28,13 +37,18 @@ public class SpecialistServiceImpl implements SpecialistService {
     private final Mapper mapper;
     private final MaktabMessageSource maktabMessageSource;
     private final RetunedMoney retunedMoney;
+    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
-    public SpecialistServiceImpl(SpecialistRepository specialistRepository, Mapper mapper, MaktabMessageSource maktabMessageSource, RetunedMoney retunedMoney) {
+    public SpecialistServiceImpl(SpecialistRepository specialistRepository, Mapper mapper, MaktabMessageSource maktabMessageSource, RetunedMoney retunedMoney, PasswordEncoder passwordEncoder, UserService userService) {
         this.specialistRepository = specialistRepository;
         this.mapper = mapper;
         this.maktabMessageSource = maktabMessageSource;
         this.retunedMoney = retunedMoney;
+        this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
     }
+
 
     @Transactional
     @Override
@@ -69,6 +83,38 @@ public class SpecialistServiceImpl implements SpecialistService {
     @Override
     public void delete(Integer id) {
         specialistRepository.deleteById(id);
+    }
+
+    @Override
+    public SpecialistDto registerSpecialist(SpecialistSignUpDto specialistSignUpDto, String siteURL) throws UnsupportedEncodingException, MessagingException, DuplicateEmailException, DuplicateUsernameException {
+        SpecialistDto specialistDto = new SpecialistDto()
+                .setName(specialistSignUpDto.getName())
+                .setEmail(specialistSignUpDto.getEmail())
+                .setLastName(specialistSignUpDto.getLastName())
+                .setUsername(specialistSignUpDto.getUsername())
+                .setPassword(specialistSignUpDto.getPassword())
+                .setProfilePicture(specialistSignUpDto.getProfilePicture());
+
+        Optional<Specialist> specialist1 = specialistRepository.findByUsername(specialistDto.getUsername());
+        if (specialist1.isPresent()) {
+            throw new DuplicateUsernameException(maktabMessageSource.getEnglish("duplicate.username"));
+        } else {
+            Optional<Specialist> specialist2 = specialistRepository.findByEmail(specialistDto.getEmail());
+            if (specialist2.isPresent()) {
+                throw new DuplicateEmailException(maktabMessageSource.getEnglish("duplicate.email"));
+            } else {
+                String encodedPassword = passwordEncoder.encode(specialistDto.getPassword());
+                specialistDto.setPassword(encodedPassword);
+
+                String randomCode = RandomString.make(64);
+                specialistDto.setVerificationCode(randomCode);
+                specialistDto.setEnabled(false);
+
+                specialistRepository.save(mapper.toSpecialist(specialistDto));
+                userService.sendVerificationEmail(specialistDto, siteURL);
+                return specialistDto;
+            }
+        }
     }
 
     @Override
@@ -143,6 +189,7 @@ public class SpecialistServiceImpl implements SpecialistService {
         List<Specialist> specialistList = specialistRepository.findAll();
         return specialistList.stream().map(mapper::toSpecialistDto).collect(Collectors.toList());
     }
+
 
 
 }
