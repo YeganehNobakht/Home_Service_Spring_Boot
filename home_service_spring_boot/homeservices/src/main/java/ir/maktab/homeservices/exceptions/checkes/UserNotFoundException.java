@@ -1,0 +1,7 @@
+package ir.maktab.homeservices.exceptions.checkes;
+
+public class UserNotFoundException extends Exception{
+    public UserNotFoundException(String message) {
+        super(message);
+    }
+}
