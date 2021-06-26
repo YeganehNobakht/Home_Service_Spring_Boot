@@ -28,5 +28,7 @@ public interface ManagerService {
     List<SubCategoryDto> getSubCategory();
 
     ManagerDto login(ManagerDto managerDto) throws ManagerNotFoundException;
-    //List<User>
+
+    List<UserDto> filterUser(UserFilter user) throws ServiceNotFoundException;
+
 }
