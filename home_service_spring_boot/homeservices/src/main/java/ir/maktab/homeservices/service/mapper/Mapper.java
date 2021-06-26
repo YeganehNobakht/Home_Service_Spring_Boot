@@ -27,7 +27,9 @@ public class Mapper {
                 .setUserStatus(customerDto.getUserStatus())
                 .setCustomerOrderList(customerDto.getCustomerOrderList().stream().map(this::toCustomerOrder).collect(Collectors.toList()))
               //  .setCustomerCommentList(customerDto.getCustomerCommentList().stream().map(this::toCustomerComment).collect(Collectors.toList()))
-                .setId(customerDto.getId());
+                .setId(customerDto.getId())
+                .setVerificationCode(customerDto.getVerificationCode())
+                .setEnabled(customerDto.isEnabled());
     }
 
     public CustomerDto toCustomerDto(Customer customer) {
@@ -42,7 +44,9 @@ public class Mapper {
                 .setUserStatus(customer.getUserStatus())
                 //.setCustomerOrderList(customer.getCustomerOrderList().stream().map(this::toCustomerOrderDto).collect(Collectors.toList()))
                 //.setCustomerCommentList(customer.getCustomerCommentList().stream().map(this::toCustomerCommentDto).collect(Collectors.toList()))
-                .setId(customer.getId());
+                .setId(customer.getId())
+                .setVerificationCode(customer.getVerificationCode())
+                .setEnabled(customer.isEnabled());
 
     }
 
@@ -151,6 +155,8 @@ public class Mapper {
                 .setPassword(specialistDto.getPassword())
                 .setUsername(specialistDto.getUsername())
                 .setUserStatus(specialistDto.getUserStatus())
+                .setVerificationCode(specialistDto.getVerificationCode())
+                .setEnabled(specialistDto.isEnabled())
                 .setServiceCategoryList(specialistDto.getServiceCategoryList().stream().map(this::toServiceCategory).collect(Collectors.toSet()));
 //                .setCustomerCommentList(specialistDto.getCustomerCommentList().stream().map(this::toCustomerComment).collect(Collectors.toList()))
 //                .setSuggestionList(specialistDto.getSuggestionList().stream().map(s -> toSuggestion(s)).collect(Collectors.toList()));

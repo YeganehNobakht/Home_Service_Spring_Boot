@@ -20,7 +20,10 @@ public class UserMapperImpl implements UserMapper {
                 .setEmail(userDto.getEmail())
                 .setPassword(userDto.getPassword())
                 .setUserStatus(userDto.getUserStatus())
-                .setUserRole(userDto.getUserRole());
+                .setUserRole(userDto.getUserRole())
+                .setEnabled(userDto.isEnabled())
+                .setVerificationCode(userDto.getVerificationCode());
+
     }
 
     @Override
@@ -32,6 +35,8 @@ public class UserMapperImpl implements UserMapper {
                 .setEmail(user.getEmail())
                 .setPassword(user.getPassword())
                 .setUserStatus(user.getUserStatus())
-                .setUserRole(user.getUserRole());
+                .setUserRole(user.getUserRole())
+                .setEnabled(user.isEnabled())
+                .setVerificationCode(user.getVerificationCode());
     }
 }
