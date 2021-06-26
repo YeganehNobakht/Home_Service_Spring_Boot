@@ -7,6 +7,8 @@ import ir.maktab.homeservices.exceptions.checkes.DuplicateEmailException;
 import ir.maktab.homeservices.exceptions.checkes.DuplicateUsernameException;
 import ir.maktab.homeservices.exceptions.checkes.SpecialistNotFoundException;
 
+import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public interface SpecialistService {
@@ -15,11 +17,9 @@ public interface SpecialistService {
 
     void delete(Integer id);
 
-//    void changePassword(String username, String oldPass, String newPass) throws Exception;
+    SpecialistDto registerSpecialist(SpecialistSignUpDto specialistSignUpDto, String siteURL) throws UnsupportedEncodingException, MessagingException, DuplicateEmailException, DuplicateUsernameException;
 
     void update(SpecialistDto specialistDto) throws SpecialistNotFoundException;
-
-//    SpecialistDto get(String username) throws Exception;
 
     SpecialistDto login(SpecialistDto specialistDto) throws SpecialistNotFoundException;
 
