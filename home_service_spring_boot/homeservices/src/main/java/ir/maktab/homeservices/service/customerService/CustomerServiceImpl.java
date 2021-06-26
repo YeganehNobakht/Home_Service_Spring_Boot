@@ -1,19 +1,26 @@
 package ir.maktab.homeservices.service.customerService;
 
 import ir.maktab.homeservices.data.entity.Customer;
+import ir.maktab.homeservices.data.entity.User;
 import ir.maktab.homeservices.data.entity.enums.UserStatus;
 import ir.maktab.homeservices.data.repository.Customer.CustomerRepository;
 import ir.maktab.homeservices.dto.CustomerDto;
 import ir.maktab.homeservices.dto.CustomerOrderDto;
+import ir.maktab.homeservices.dto.UserDto;
 import ir.maktab.homeservices.exceptions.checkes.*;
 import ir.maktab.homeservices.service.customerOrderService.CustomerOrderService;
 import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
 import ir.maktab.homeservices.service.mapper.Mapper;
 import ir.maktab.homeservices.service.serviceCategory.ServiceCategoryService;
 import ir.maktab.homeservices.service.subCategoryService.SubCategoryService;
+import ir.maktab.homeservices.service.userService.UserService;
+import net.bytebuddy.utility.RandomString;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,18 +33,22 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerOrderService customerOrderService;
     private final Mapper mapper;
     private final MaktabMessageSource maktabMessageSource;
+    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     public CustomerServiceImpl(CustomerRepository customerRepository,
                                ServiceCategoryService serviceCategoryService,
                                SubCategoryService subCategoryService,
                                CustomerOrderService customerOrderService,
-                               Mapper mapper, MaktabMessageSource maktabMessageSource) {
+                               Mapper mapper, MaktabMessageSource maktabMessageSource, PasswordEncoder passwordEncoder, UserService userService) {
         this.customerRepository = customerRepository;
         this.serviceCategoryService = serviceCategoryService;
         this.subCategoryService = subCategoryService;
         this.customerOrderService = customerOrderService;
         this.mapper = mapper;
         this.maktabMessageSource = maktabMessageSource;
+        this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
     }
 
     @Override
@@ -57,55 +68,46 @@ public class CustomerServiceImpl implements CustomerService {
         } else
             throw new CustomerNotFoundException(maktabMessageSource.getEnglish("customer.not.found", new Object[]{username}));
     }
-//    private void showServices(){
-//        List<ServiceCategory> all = serviceCategoryService.getAll();
-//        for (ServiceCategory serviceCategory : all){
-//            System.out.println(serviceCategory.getName());
-//            serviceCategory.getSubCategoryList().stream()
-//                    .filter(s->s.getServiceCategory().equals(serviceCategory.getName()))
-//                    .forEach(s-> System.out.println("    - " + s.getName()));
-//        }
-//    }
 
-    //    private void registerOrder(CustomerDto customerDto) throws Exception {
-//        System.out.println("\n\nChose a service:");
-//        System.out.println("Example: service/subservice");
-//        String[] customerInput = scanner.next().split("/");
-//        if (customerInput.length!=2)
-//            throw new Exception("Invalid input");
-//        ServiceCategory serviceCategory = serviceCategoryService.getByName(customerInput[0]);
-//        SubCategory subCategory = subCategoryService.getByName(customerInput[1]);
-//
-//        System.out.println("Enter your Address");
-//        System.out.println("Example: Tehran Valiasr Narges6");
-//        String city = scanner.next();
-//        String  street = scanner.next();
-//        String alley = scanner.next();
-//
-//        Address address = new Address().setCity(city).setStreet(street).setAlley(alley);
-//
-//        CustomerOrder customerOrder= new CustomerOrder().setCustomer(customerDto)
-//                            .setOrderDate(new Date())
-//                            .setAddress(address)
-//                            .setServiceCategory(serviceCategory)
-//                            .setSubCategory(subCategory)
-//                            .setOrderStatus(OrderStatus.WAITING_FOR_SPECIALIST_OFFER);
-//        customerOrderService.create(customerOrder);
-//    }
-//
     @Override
     public Customer changePassword(String username, String oldPass, String newPass) throws CustomerNotFoundException, PasswordNotFoundException {
         Optional<Customer> customer = customerRepository.findByUsername(username);
         if (customer.isPresent()) {
             if (customer.get().getPassword().equals(oldPass)) {
                 customer.get().setPassword(newPass);
-                //using save method for update
                 return customerRepository.save(customer.get());
             }
             throw new PasswordNotFoundException(maktabMessageSource.getEnglish("password.not.found"));
 
         }
         throw new CustomerNotFoundException(maktabMessageSource.getEnglish("customer.not.found",new Object[]{username}));
+    }
+
+    @Override
+    public CustomerDto registerCustomer(CustomerDto customerDto, String siteURL) throws UnsupportedEncodingException, MessagingException, DuplicateEmailException, DuplicateUsernameException {
+        Customer customer = mapper.toCustomer(customerDto);
+        Optional<Customer> customer1 = customerRepository.findByEmail(customer.getEmail());
+        if (customer1.isPresent()) {
+            throw new DuplicateEmailException(maktabMessageSource.getEnglish("duplicate.email"));
+
+        } else {
+            Optional<Customer> customer2 = customerRepository.findByUsername(customer.getUsername());
+            if (customer2.isPresent())
+                throw new DuplicateUsernameException(maktabMessageSource.getEnglish("duplicate.username"));
+            else {
+                String encodedPassword = passwordEncoder.encode(customerDto.getPassword());
+                customerDto.setPassword(encodedPassword);
+
+                String randomCode = RandomString.make(64);
+                customer.setVerificationCode(randomCode).setEnabled(false);
+                customerDto.setVerificationCode(randomCode).setEnabled(false);
+
+                customerRepository.save(customer);
+                userService.sendVerificationEmail(customerDto, siteURL);
+                return customerDto;
+            }
+        }
+
     }
 
     @Override
