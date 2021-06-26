@@ -75,7 +75,7 @@ public class managerController {
     @PostMapping("/search")
     public ModelAndView searchSuggestions(@ModelAttribute("userDto") UserFilter userFilter) throws ServiceNotFoundException {
         logger.info("...filter for user information...");
-        return new ModelAndView("managerGetUserInfo","allUser",userService.filterUser(userFilter));
+        return new ModelAndView("managerGetUserInfo","allUser",managerService.filterUser(userFilter));
     }
 
     @GetMapping("/addService")
