@@ -9,6 +9,7 @@ import ir.maktab.homeservices.exceptions.checkes.SpecialistNotFoundException;
 import ir.maktab.homeservices.service.customerOrderService.CustomerOrderService;
 import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
 import ir.maktab.homeservices.service.serviceCategory.ServiceCategoryService;
+import ir.maktab.homeservices.service.siteUrl.SiteUrl;
 import ir.maktab.homeservices.service.specialistService.SpecialistService;
 import ir.maktab.homeservices.service.suggestionService.SuggestionService;
 import ir.maktab.homeservices.service.validation.OnLogin;
@@ -39,19 +40,23 @@ public class SpecialistController {
     private final ServiceCategoryService serviceCategoryService;
     private final SuggestionService suggestionService;
     private final MaktabMessageSource maktabMessageSource;
+    private final SiteUrl siteUrl;
 
-    public SpecialistController(SpecialistService specialistService, CustomerOrderService customerOrderService, ServiceCategoryService serviceCategoryService, SuggestionService suggestionService, MaktabMessageSource maktabMessageSource) {
+    public SpecialistController(SpecialistService specialistService, CustomerOrderService customerOrderService, ServiceCategoryService serviceCategoryService, SuggestionService suggestionService, MaktabMessageSource maktabMessageSource, SiteUrl siteUrl) {
         this.specialistService = specialistService;
         this.customerOrderService = customerOrderService;
         this.serviceCategoryService = serviceCategoryService;
         this.suggestionService = suggestionService;
         this.maktabMessageSource = maktabMessageSource;
+        this.siteUrl = siteUrl;
     }
+
     @GetMapping("/login")
-    public ModelAndView login(){
+    public ModelAndView login() {
         logger.info("...specialist login page...");
-        return new ModelAndView("specialistLogin","specialistDto", new SpecialistDto());
+        return new ModelAndView("specialistLogin", "specialistDto", new SpecialistDto());
     }
+
     @PostMapping("/register")
     public String register(@ModelAttribute("specialistDto") @Validated(OnLogin.class) SpecialistDto specialistDto,
                            BindingResult bindingResult, Model model,
@@ -60,88 +65,85 @@ public class SpecialistController {
         if (bindingResult.hasErrors())
             return "specialistLogin";
 
-            SpecialistDto login = specialistService.login(specialistDto);
-            HttpSession session = request.getSession(true);
-            session.setAttribute("mySpecialistDto", login);
+        SpecialistDto login = specialistService.login(specialistDto);
+        HttpSession session = request.getSession(true);
+        session.setAttribute("mySpecialistDto", login);
 
         return "specialistService";
     }
 
     @GetMapping("/signUp")
-    public ModelAndView signUp(HttpServletRequest request){
+    public ModelAndView signUp(HttpServletRequest request) {
         logger.info("...specialist sign up page...");
         HttpSession session = request.getSession(true);
         List<ServiceCategoryDto> allServices = serviceCategoryService.getAll();
-        session.setAttribute("allServices",allServices);
-        return new ModelAndView("specialistSignUp","specialistDto",new SpecialistSignUpDto());
+        session.setAttribute("allServices", allServices);
+        return new ModelAndView("specialistSignUp", "specialistDto", new SpecialistSignUpDto());
     }
 
     @PostMapping("/registerSignUp")
     public String registerSignUp(@ModelAttribute("specialistDto") @Validated(OnRegister.class) SpecialistSignUpDto specialistDto,
                                  HttpServletRequest request) throws Exception {
         logger.info("...specialist register from sign up page...");
-        HttpSession session = request.getSession(true);
-        if (session.getAttribute("mySpecialistDto")==null) {
-            ServiceCategoryDto service = serviceCategoryService.getByName(specialistDto.getServiceCategory().getName());
-            specialistDto.setServiceCategory(service);
-            SpecialistDto specialistDto1 = specialistService.create(specialistDto);
-            session.setAttribute("mySpecialistDto", specialistDto1);
-        }
-        return "specialistService";
+        ServiceCategoryDto service = serviceCategoryService.getByName(specialistDto.getServiceCategory().getName());
+        specialistDto.setServiceCategory(service);
+        SpecialistDto specialistDto1 = specialistService.registerSpecialist(specialistDto, siteUrl.getSiteURL(request));
+        return "register_success";
     }
 
     @GetMapping("/showOrder")
-    public ModelAndView showOrder(@SessionAttribute("mySpecialistDto") SpecialistDto specialistDto ) throws ServiceNotFoundException {
+    public ModelAndView showOrder(@SessionAttribute("mySpecialistDto") SpecialistDto specialistDto) throws ServiceNotFoundException {
         logger.info("...show all unselected order for specialist...");
         List<ServiceCategoryDto> serviceCategoryDtoList = specialistDto.getServiceCategoryList();
         Set<CustomerOrderDto> orderDtoList = new HashSet<>();
-        Map<String , Object>  orderMap = new HashMap<>();
-        for (ServiceCategoryDto s: serviceCategoryDtoList){
+        Map<String, Object> orderMap = new HashMap<>();
+        for (ServiceCategoryDto s : serviceCategoryDtoList) {
             List<CustomerOrderDto> order = customerOrderService.findByService(s);
-            for (CustomerOrderDto o:order) {
+            for (CustomerOrderDto o : order) {
                 if (suggestionService.findBySpecialist_IdAndOrderId(specialistDto.getId(), o.getId()) == null)
                     orderDtoList.add(o);
             }
         }
-        orderMap.put("order",orderDtoList);
-        return new ModelAndView("specialistShowOrder",orderMap);
+        orderMap.put("order", orderDtoList);
+        return new ModelAndView("specialistShowOrder", orderMap);
 
     }
+
     @GetMapping("/changePass")
-    public ModelAndView changePass(){
-        return new ModelAndView("specialistChangePass","changePass",new ChangePassDto());
+    public ModelAndView changePass() {
+        return new ModelAndView("specialistChangePass", "changePass", new ChangePassDto());
     }
+
     @PostMapping("/change")
-    public ModelAndView change(@ModelAttribute("changePass")ChangePassDto changePassDto,
+    public ModelAndView change(@ModelAttribute("changePass") ChangePassDto changePassDto,
                                @SessionAttribute("mySpecialistDto") SpecialistDto specialistDto) throws Exception {
         logger.info("...specialist change password...");
-        Map<String , String > message = new HashMap<>();
-        if (specialistDto.getPassword().equals(changePassDto.getOldPass())){
+        Map<String, String> message = new HashMap<>();
+        if (specialistDto.getPassword().equals(changePassDto.getOldPass())) {
             specialistDto.setPassword(changePassDto.getNewPass());
             specialistService.update(specialistDto);
-            message.put("message",maktabMessageSource.getEnglish("pass.change"));
-        }
-        else
+            message.put("message", maktabMessageSource.getEnglish("pass.change"));
+        } else
             logger.warn("...old pass does not match...");
-            message.put("message",maktabMessageSource.getEnglish("old.pass.incorrect"));
+        message.put("message", maktabMessageSource.getEnglish("old.pass.incorrect"));
 
-        return new ModelAndView("specialistChangePass",message);
+        return new ModelAndView("specialistChangePass", message);
     }
 
     @GetMapping("/showAllOrders")
-    public String showAllOrders(){
+    public String showAllOrders() {
         logger.info("...current and completed orders...");
         return "specialistShowAllOrders";
     }
 
     @GetMapping("/currentOrder")
-    public String currentOrder(@SessionAttribute("mySpecialistDto")SpecialistDto specialistDto,
+    public String currentOrder(@SessionAttribute("mySpecialistDto") SpecialistDto specialistDto,
                                HttpServletRequest request, Model model) {
         logger.info("...current orders...");
 
         List<SuggestionDto> suggestionDtoList = suggestionService.findUserBySuggestionStatusAndSpecialist(SuggestionStatus.ACCEPTED, specialistDto.getId());
         HttpSession session = request.getSession(true);
-        session.setAttribute("suggestionList",suggestionDtoList);
+        session.setAttribute("suggestionList", suggestionDtoList);
 
         List<CustomerOrderDto> orderDtoList = suggestionDtoList.stream().map(SuggestionDto::getCustomerOrder).collect(Collectors.toList());
         model.addAttribute("orders", orderDtoList);
@@ -150,7 +152,7 @@ public class SpecialistController {
 
     @GetMapping("/changeStatus/{orderId}")
     public String findOrder(@PathVariable(value = "orderId") Integer orderId,
-                            @SessionAttribute("suggestionList")List<SuggestionDto> suggestionDtoList,
+                            @SessionAttribute("suggestionList") List<SuggestionDto> suggestionDtoList,
                             Model model, HttpServletRequest request) throws Exception {
         logger.info("...change status of an order which selected...");
         List<SuggestionDto> suggestionDto = suggestionDtoList.stream().filter(s -> s.getCustomerOrder().getId().equals(orderId)).collect(Collectors.toList());
@@ -166,7 +168,7 @@ public class SpecialistController {
         }
         if (suggestionDto.get(0).getCustomerOrder().getOrderStatus().equals(OrderStatus.STARTED)) {
             customerOrderService.updateOrderStatus(suggestionDto.get(0).getCustomerOrder().setOrderStatus(OrderStatus.FINISHED_WORK));
-            model.addAttribute("success",maktabMessageSource.getEnglish("change.status.to.started") );
+            model.addAttribute("success", maktabMessageSource.getEnglish("change.status.to.started"));
             return "specialistSuccessPage";
         }
         if (suggestionDto.get(0).getCustomerOrder().getOrderStatus().equals(OrderStatus.FINISHED_WORK)) {
@@ -182,31 +184,32 @@ public class SpecialistController {
     }
 
     @GetMapping("/completeOrder")
-    public String showCompleteOrder(@SessionAttribute("mySpecialistDto") SpecialistDto specialistDto, Model model){
+    public String showCompleteOrder(@SessionAttribute("mySpecialistDto") SpecialistDto specialistDto, Model model) {
         logger.info("...chane status of completed orders...");
         List<SuggestionDto> suggestionDtos = suggestionService.findUserBySuggestionStatusAndSpecialist(SuggestionStatus.DONE, specialistDto.getId());
         List<CustomerOrderDto> orderDto = suggestionDtos.stream().map(SuggestionDto::getCustomerOrder).collect(Collectors.toList());
-        model.addAttribute("orderDto",orderDto);
+        model.addAttribute("orderDto", orderDto);
         return "specialistCompletedOrder";
     }
 
     @GetMapping("/showSpeciality")
-    public String  showSpeciality(@SessionAttribute("mySpecialistDto") SpecialistDto specialistDto,
-                                  HttpServletRequest request, Model model){
+    public String showSpeciality(@SessionAttribute("mySpecialistDto") SpecialistDto specialistDto,
+                                 HttpServletRequest request, Model model) {
 //        List<ServiceCategoryDto> serviceCategoryDtoList = serviceCategoryService.showServicesNotInSpecialistServiceList(specialistDto);
         List<ServiceCategoryDto> serviceCategoryDtoList = serviceCategoryService.getAll();
         HttpSession session = request.getSession(true);
-        session.setAttribute("serviceList",serviceCategoryDtoList);
-        session.setAttribute("specialistServiceList",specialistDto.getServiceCategoryList());
-        model.addAttribute("serviceList",serviceCategoryDtoList);
-        model.addAttribute("specialistServiceList",specialistDto.getServiceCategoryList());
+        session.setAttribute("serviceList", serviceCategoryDtoList);
+        session.setAttribute("specialistServiceList", specialistDto.getServiceCategoryList());
+        model.addAttribute("serviceList", serviceCategoryDtoList);
+        model.addAttribute("specialistServiceList", specialistDto.getServiceCategoryList());
         return "specialistShowSpeciality";
     }
+
     @PostMapping("/addSpeciality")
-    public String addSpeciality(@RequestParam("service")String serviceName,
-                                @SessionAttribute("mySpecialistDto")SpecialistDto specialistDto, Model model) throws SpecialistNotFoundException, ServiceAlreadyExistException {
-        serviceCategoryService.addServiceToSpecialist(serviceName,specialistDto);
-        model.addAttribute("success",maktabMessageSource.getEnglish("service.to.specialist.add",new Object[]{serviceName}));
+    public String addSpeciality(@RequestParam("service") String serviceName,
+                                @SessionAttribute("mySpecialistDto") SpecialistDto specialistDto, Model model) throws SpecialistNotFoundException, ServiceAlreadyExistException {
+        serviceCategoryService.addServiceToSpecialist(serviceName, specialistDto);
+        model.addAttribute("success", maktabMessageSource.getEnglish("service.to.specialist.add", new Object[]{serviceName}));
         return "specialistSuccessPage";
     }
 }
