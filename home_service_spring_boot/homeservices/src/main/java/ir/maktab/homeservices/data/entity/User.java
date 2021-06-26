@@ -31,6 +31,9 @@ public class User {
     @Column(name = "USER_ROLE", insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
+    @Column(length = 64)
+    private String verificationCode;
+    private boolean enabled=false;
 
     public User(String username, String password, String name, String lastName, String email) {
         this.username = username;
@@ -130,6 +133,24 @@ public class User {
 
     public User setUserRole(UserRole userRole) {
         this.userRole = userRole;
+        return this;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public User setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+        return this;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public User setEnabled(boolean enabled) {
+        this.enabled = enabled;
         return this;
     }
 }
