@@ -10,7 +10,7 @@ import java.util.Date;
 public class UserDto {
 
     private Integer id;
-//    @ValidPassword(groups = {OnRegister.class, OnLogin.class, OnChangePassword.class})
+    //    @ValidPassword(groups = {OnRegister.class, OnLogin.class, OnChangePassword.class})
     private String username;
     @ValidPassword(groups = {OnRegister.class, OnLogin.class, OnChangePassword.class})
     private String password;
@@ -20,20 +20,23 @@ public class UserDto {
     @NotBlank(message = "lastName", groups = {OnRegister.class})
     @Size(min = 2, max = 20, message = "lastName.size", groups = {OnRegister.class})
     private String lastName;
-    @Email(groups = { OnRegister.class})
+    @Email(groups = {OnRegister.class})
     @NotBlank(message = "email", groups = {OnRegister.class})
     private String email;
 
     private UserStatus userStatus;
 
     private Date date;
-    @NotNull(message = "balance.not.blank",groups = {OnIncreaseBalance.class})
-    @Pattern(regexp = "^[0-9]",message = "balance.must.be.int")
+    @NotNull(message = "balance.not.blank", groups = {OnIncreaseBalance.class})
+    @Pattern(regexp = "^[0-9]", message = "balance.must.be.int")
     private double Balance;
 
     private UserRole userRole;
 
     private String Speciality;
+
+    private String verificationCode;
+    private boolean enabled = false;
 
     public Integer getId() {
         return id;
@@ -131,6 +134,29 @@ public class UserDto {
 
     public UserDto setSpeciality(String speciality) {
         Speciality = speciality;
+        return this;
+    }
+
+    public UserDto setBalance(double balance) {
+        Balance = balance;
+        return this;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public UserDto setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+        return this;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public UserDto setEnabled(boolean enabled) {
+        this.enabled = enabled;
         return this;
     }
 }
