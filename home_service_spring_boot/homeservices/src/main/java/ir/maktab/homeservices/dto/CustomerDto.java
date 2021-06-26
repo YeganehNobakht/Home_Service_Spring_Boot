@@ -1,5 +1,6 @@
 package ir.maktab.homeservices.dto;
 
+import ir.maktab.homeservices.data.entity.Customer;
 import ir.maktab.homeservices.data.entity.enums.UserStatus;
 import ir.maktab.homeservices.dto.enums.UserRole;
 
@@ -87,6 +88,30 @@ public class CustomerDto extends UserDto {
     @Override
     public CustomerDto setUserRole(UserRole userRole) {
         super.setUserRole(userRole);
+        return this;
+    }
+
+    @Override
+    public CustomerDto setVerificationCode(String verificationCode) {
+        super.setVerificationCode(verificationCode);
+        return this;
+    }
+
+    @Override
+    public CustomerDto setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public CustomerDto setSpeciality(String speciality) {
+        super.setSpeciality(speciality);
+        return this;
+    }
+
+    @Override
+    public CustomerDto setBalance(double balance) {
+        super.setBalance(balance);
         return this;
     }
 }

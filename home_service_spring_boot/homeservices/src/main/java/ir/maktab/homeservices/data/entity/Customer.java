@@ -101,4 +101,15 @@ public class Customer extends User {
         return this;
     }
 
+    @Override
+    public Customer setVerificationCode(String verificationCode) {
+       super.setVerificationCode(verificationCode);
+       return this;
+    }
+
+    @Override
+    public Customer setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        return this;
+    }
 }
