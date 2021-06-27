@@ -38,13 +38,13 @@ public class UserServiceImpl implements UserService {
             throws UnsupportedEncodingException, MessagingException {
         String toAddress = dto.getEmail();
         String fromAddress = "masimasi128@gmail.com";
-        String senderName = "masi";
+        String senderName = "Bama";
         String subject = "Please verify your registration";
         String content = "Dear [[name]],<br>"
                 + "Please click the link below to verify your registration:<br>"
                 + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
-                + "Thank you,<br>"
-                + "zahra asgari...";
+                + "Best regard,<br>"
+                + "Bama service...";
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
