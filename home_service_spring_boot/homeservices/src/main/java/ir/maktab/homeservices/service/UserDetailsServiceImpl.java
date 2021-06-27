@@ -28,7 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 if (user.isEnabled()) {
                     return User.withUsername(user.getUsername())
                             .password(user.getPassword())
-                            .roles("Customer")
+                            .roles(UserRole.Customer.name())
                             .build();
                 }
 //                TODO::Exception
@@ -37,7 +37,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 if (user.isEnabled()) {
                     return User.withUsername(user.getUsername())
                             .password(user.getPassword())
-                            .roles("Specialist")
+                            .roles(UserRole.Specialist.name())
                             .build();
                 }
 //                TODO::Exception
@@ -45,7 +45,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             if (user.getUserRole().equals(UserRole.Manager)) {
                 return User.withUsername(user.getUsername())
                         .password(user.getPassword())
-                        .roles("Manager")
+                        .roles(UserRole.Manager.name())
                         .build();
             }
 
