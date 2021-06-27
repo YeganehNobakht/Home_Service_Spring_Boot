@@ -31,4 +31,5 @@ public interface ManagerService {
 
     List<UserDto> filterUser(UserFilter user) throws ServiceNotFoundException;
 
+    ManagerDto findByUsername(String username) throws ManagerNotFoundException;
 }

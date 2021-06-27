@@ -45,7 +45,7 @@ public class managerServiceImpl implements ManagerService {
 
 
     @Override
-    public void addSpecialist(SpecialistDto specialistDto)  {
+    public void addSpecialist(SpecialistDto specialistDto) {
 
     }
 
@@ -60,7 +60,7 @@ public class managerServiceImpl implements ManagerService {
         if (service.getSpecialistList().stream().anyMatch(specialist -> specialist.getId().equals(id)))
             specialistService.delete(id);
         else
-            throw new SpecialistNotFoundException(maktabMessageSource.getEnglish("specialist.not.found",new Object[]{id}));
+            throw new SpecialistNotFoundException(maktabMessageSource.getEnglish("specialist.not.found", new Object[]{id}));
     }
 
     @Override
@@ -95,46 +95,39 @@ public class managerServiceImpl implements ManagerService {
 
     @Override
     public ManagerDto login(ManagerDto managerDto) throws ManagerNotFoundException {
-        Optional<Manager> manager = managerRepository.findByUsernameAndPassword(managerDto.getUsername(),managerDto.getPassword());
+        Optional<Manager> manager = managerRepository.findByUsernameAndPassword(managerDto.getUsername(), managerDto.getPassword());
         if (manager.isPresent()) {
-           return managerMapper.toManagerDto(manager.get());
+            return managerMapper.toManagerDto(manager.get());
         }
-        throw new ManagerNotFoundException(maktabMessageSource.getEnglish("manager.not.found",new Object[]{managerDto.getUsername()}));
+        throw new ManagerNotFoundException(maktabMessageSource.getEnglish("manager.not.found", new Object[]{managerDto.getUsername()}));
 
     }
+
     @Override
     public List<UserDto> filterUser(UserFilter user) throws ServiceNotFoundException {
         return userService.filterUser(user, getService(user));
     }
 
+    @Override
+    public ManagerDto findByUsername(String username) throws ManagerNotFoundException {
+        Optional<Manager> manager = managerRepository.findByUsername(username);
+        if (manager.isPresent())
+            return managerMapper.toManagerDto(manager.get());
+        throw new ManagerNotFoundException(maktabMessageSource.getEnglish("manager.not.found", new Object[]{username}));
+
+    }
+
 
     private ServiceCategory getService(UserFilter user) throws ServiceNotFoundException {
-        ServiceCategoryDto serviceCategoryDto =null;
+        ServiceCategoryDto serviceCategoryDto = null;
         if (!StringUtils.isEmpty(user.getSpeciality())) {
             serviceCategoryDto = serviceCategoryService.getByName(user.getSpeciality());
         }
         ServiceCategory service = null;
-        if (serviceCategoryDto!=null){
+        if (serviceCategoryDto != null) {
             service = mapper.toServiceCategory(serviceCategoryDto);
             return service;
         }
         return null;
     }
-
-
-//    private int getInputNumber(){
-//        boolean validInput = false;
-//        int numberOfInput =0;
-//        while (!validInput) {
-//            try {
-//                System.out.println("Enter number of drivers");
-//                String strDriverNumber = scanner.next();
-//                numberOfInput = Integer.parseInt(strDriverNumber);
-//                validInput = true;
-//            } catch (NumberFormatException e) {
-//                System.out.println("Wrong input type! try again...");
-//            }
-//        }
-//        return numberOfInput;
-//    }
 }
