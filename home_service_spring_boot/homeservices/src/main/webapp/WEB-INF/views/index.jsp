@@ -40,7 +40,7 @@
                         <li>
                             <%--                            <a class="nav-link" href="" data-toggle="modal" data-target="#modalLoginForm">Login </a>--%>
                             <%--                            <a class="dropdown-item" href="" data-toggle="modal" data-target="#modalLoginForm">Sign in</a>--%>
-                        <li><a class="dropdown-item" href="/customer/login">sign in</a></li>
+                        <li><a class="dropdown-item" href="/login">sign in</a></li>
                         </li>
                         <li><a class="dropdown-item" href="/customer/signUp">sign up</a></li>
                     </ul>
@@ -49,7 +49,7 @@
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
                        aria-expanded="false">Specialist Service</a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/specialist/login">Sign in</a></li>
+                        <li><a class="dropdown-item" href="/login">Sign in</a></li>
                         <li><a class="dropdown-item" href="/specialist/signUp">sign up</a></li>
                     </ul>
                 </li>
@@ -57,7 +57,7 @@
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="" role="button"
                        aria-expanded="false">Manager Service</a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/mngr/login">Sign in</a></li>
+                        <li><a class="dropdown-item" href="/login">Sign in</a></li>
                     </ul>
                 </li>
 
