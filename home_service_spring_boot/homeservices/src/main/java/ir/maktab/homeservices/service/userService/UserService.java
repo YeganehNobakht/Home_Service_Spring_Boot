@@ -3,6 +3,7 @@ package ir.maktab.homeservices.service.userService;
 import ir.maktab.homeservices.data.entity.ServiceCategory;
 import ir.maktab.homeservices.dto.UserDto;
 import ir.maktab.homeservices.dto.UserFilter;
+import ir.maktab.homeservices.exceptions.checkes.PasswordNotFoundException;
 import ir.maktab.homeservices.exceptions.checkes.ServiceNotFoundException;
 
 import javax.mail.MessagingException;
@@ -19,4 +20,6 @@ public interface UserService {
     List<UserDto> filterUser(UserFilter user, ServiceCategory serviceCategory) throws ServiceNotFoundException;
 
     List<UserDto> findAll();
+
+    void checkForChangePassword(UserDto userDto, String oldPass, String newPass) throws PasswordNotFoundException;
 }
