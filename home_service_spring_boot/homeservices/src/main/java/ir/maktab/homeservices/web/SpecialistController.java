@@ -12,13 +12,11 @@ import ir.maktab.homeservices.service.serviceCategory.ServiceCategoryService;
 import ir.maktab.homeservices.service.siteUrl.SiteUrl;
 import ir.maktab.homeservices.service.specialistService.SpecialistService;
 import ir.maktab.homeservices.service.suggestionService.SuggestionService;
-import ir.maktab.homeservices.service.validation.OnLogin;
 import ir.maktab.homeservices.service.validation.OnRegister;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -57,18 +55,13 @@ public class SpecialistController {
         return new ModelAndView("specialistLogin", "specialistDto", new SpecialistDto());
     }
 
-    @PostMapping("/register")
-    public String register(@ModelAttribute("specialistDto") @Validated(OnLogin.class) SpecialistDto specialistDto,
-                           BindingResult bindingResult, Model model,
-                           HttpServletRequest request) throws SpecialistNotFoundException {
+    @GetMapping("/register")
+    public String register(HttpServletRequest request) throws SpecialistNotFoundException {
         logger.info("...specialist registered...");
-        if (bindingResult.hasErrors())
-            return "specialistLogin";
+        HttpSession session = request.getSession(false);
+        SpecialistDto dto = specialistService.findByUsername((String) session.getAttribute("username"));
 
-        SpecialistDto login = specialistService.login(specialistDto);
-        HttpSession session = request.getSession(true);
-        session.setAttribute("mySpecialistDto", login);
-
+        session.setAttribute("mySpecialistDto", dto);
         return "specialistService";
     }
 
