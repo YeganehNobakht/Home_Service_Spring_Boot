@@ -66,9 +66,6 @@
                     <a class="nav-link " aria-current="page" href="/">Home</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="<c:url value="/customer/login"/>">Registration Of Customer</a>
-                </li>
 
             </ul>
 
