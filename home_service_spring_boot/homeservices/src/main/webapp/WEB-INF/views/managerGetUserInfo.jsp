@@ -92,6 +92,7 @@
         <div class="m4">
             <h5 class="d-flex justify-content-center text-info">${message}</h5>
             <h5 class="d-flex justify-content-center text-danger">${error}</h5>
+            <h5 class="d-flex justify-content-center text-black">Select a user to see her/his all order history.</h5>
 
             <form:form modelAttribute="userDto" method="post" action="/mngr/search">
                 <table class="table table-striped table-warning table-hover d-flex justify-content-center">
@@ -144,6 +145,7 @@
                         <td>Last Name</td>
                         <td>Email</td>
                         <td>Status</td>
+                        <td>Selection</td>
                     </tr>
                     <c:forEach items="${allUser}" var="o">
                         <tr>
@@ -152,6 +154,7 @@
                             <td>${o.lastName}</td>
                             <td>${o.email}</td>
                             <td>${o.userStatus}</td>
+                            <td><a name="Select" onclick="choose(${o.id})"><button type="button">Order History</button></a></td>
                         </tr>
                     </c:forEach>
                 </table>
@@ -164,6 +167,13 @@
 <%
     }
 %>
+<script>
+    function choose(id) {
+        console.log("in")
+        window.location.href = "http://localhost:8080/mngr/orderForAUser/"+id
+    }
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
         crossorigin="anonymous"></script>
