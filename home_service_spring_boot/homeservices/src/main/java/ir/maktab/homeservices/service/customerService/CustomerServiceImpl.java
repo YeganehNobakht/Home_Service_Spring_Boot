@@ -1,12 +1,9 @@
 package ir.maktab.homeservices.service.customerService;
 
 import ir.maktab.homeservices.data.entity.Customer;
-import ir.maktab.homeservices.data.entity.User;
-import ir.maktab.homeservices.data.entity.enums.UserStatus;
 import ir.maktab.homeservices.data.repository.Customer.CustomerRepository;
 import ir.maktab.homeservices.dto.CustomerDto;
 import ir.maktab.homeservices.dto.CustomerOrderDto;
-import ir.maktab.homeservices.dto.UserDto;
 import ir.maktab.homeservices.exceptions.checkes.*;
 import ir.maktab.homeservices.service.customerOrderService.CustomerOrderService;
 import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
@@ -57,7 +54,7 @@ public class CustomerServiceImpl implements CustomerService {
             //using save method for update
             customerRepository.save(mapper.toCustomer(customerDto));
         } else
-            throw new CustomerNotFoundException(maktabMessageSource.getEnglish("customer.not.found",new Object[]{customerDto.getUsername()}));
+            throw new CustomerNotFoundException(maktabMessageSource.getEnglish("customer.not.found", new Object[]{customerDto.getUsername()}));
     }
 
 
@@ -80,52 +77,45 @@ public class CustomerServiceImpl implements CustomerService {
             throw new PasswordNotFoundException(maktabMessageSource.getEnglish("password.not.found"));
 
         }
-        throw new CustomerNotFoundException(maktabMessageSource.getEnglish("customer.not.found",new Object[]{username}));
+        throw new CustomerNotFoundException(maktabMessageSource.getEnglish("customer.not.found", new Object[]{username}));
     }
 
     @Override
     public CustomerDto registerCustomer(CustomerDto customerDto, String siteURL) throws UnsupportedEncodingException, MessagingException, DuplicateEmailException, DuplicateUsernameException {
         Customer customer = mapper.toCustomer(customerDto);
-        Optional<Customer> customer1 = customerRepository.findByEmail(customer.getEmail());
-        if (customer1.isPresent()) {
+        findDuplicateEmail(customerDto.getEmail());
+        findDuplicateUsername(customerDto.getUsername());
+
+        //TODO:: method
+        String encodedPassword = passwordEncoder.encode(customerDto.getPassword());
+        customer.setPassword(encodedPassword);
+        String randomCode = RandomString.make(64);
+        customer.setVerificationCode(randomCode).setEnabled(false);
+        customerDto.setVerificationCode(randomCode).setEnabled(false);
+
+        customerRepository.save(customer);
+        userService.sendVerificationEmail(customerDto, siteURL);
+        return customerDto;
+
+    }
+
+
+    @Override
+    public CustomerDto findDuplicateEmail(String email) throws DuplicateEmailException {
+        Optional<Customer> customer1 = customerRepository.findByEmail(email);
+        if (customer1.isPresent())
             throw new DuplicateEmailException(maktabMessageSource.getEnglish("duplicate.email"));
-
-        } else {
-            Optional<Customer> customer2 = customerRepository.findByUsername(customer.getUsername());
-            if (customer2.isPresent())
-                throw new DuplicateUsernameException(maktabMessageSource.getEnglish("duplicate.username"));
-            else {
-                String encodedPassword = passwordEncoder.encode(customerDto.getPassword());
-                customerDto.setPassword(encodedPassword);
-
-                String randomCode = RandomString.make(64);
-                customer.setVerificationCode(randomCode).setEnabled(false);
-                customerDto.setVerificationCode(randomCode).setEnabled(false);
-
-                customerRepository.save(customer);
-                userService.sendVerificationEmail(customerDto, siteURL);
-                return customerDto;
-            }
-        }
+        return null;
 
     }
 
     @Override
-    public CustomerDto create(CustomerDto customerDto) throws DuplicateEmailException, DuplicateUsernameException {
+    public CustomerDto findDuplicateUsername(String username) throws DuplicateUsernameException {
+        Optional<Customer> customer1 = customerRepository.findByUsername(username);
+        if (customer1.isPresent())
+            throw new DuplicateUsernameException(maktabMessageSource.getEnglish("duplicate.username"));
+        return null;
 
-        Customer customer = mapper.toCustomer(customerDto);
-        Optional<Customer> customer1 = customerRepository.findByEmail(customer.getEmail());
-        if (customer1.isPresent()) {
-            throw new DuplicateEmailException(maktabMessageSource.getEnglish("duplicate.email"));
-
-        } else {
-            Optional<Customer> customer2 = customerRepository.findByUsername(customer.getUsername());
-            if (customer2.isPresent())
-                throw new DuplicateUsernameException(maktabMessageSource.getEnglish("duplicate.username"));
-            else
-                customer.setUserStatus(UserStatus.WAITING);
-                return mapper.toCustomerDto(customerRepository.save(customer));
-        }
     }
 
     @Override
@@ -149,13 +139,23 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     @Override
     public void payByAccount(CustomerDto customerDto, double price) {
-        double newBalance = customerDto.getBalance()-price;
-        customerRepository.updateBalance(customerDto.getId(),newBalance);
+        double newBalance = customerDto.getBalance() - price;
+        customerRepository.updateBalance(customerDto.getId(), newBalance);
     }
+
     @Transactional
     @Override
-    public void updateBalance(Double balance,Integer id) {
-        customerRepository.updateBalance(id,balance);
+    public void updateBalance(Double balance, Integer id) {
+        customerRepository.updateBalance(id, balance);
+    }
+
+    @Override
+    public CustomerDto findByUsername(String loggedInUsername) throws CustomerNotFoundException {
+        Optional<Customer> byUsername = customerRepository.findByUsername(loggedInUsername);
+        if (byUsername.isPresent()) {
+            return mapper.toCustomerDto(byUsername.get());
+        } else
+            throw new CustomerNotFoundException(maktabMessageSource.getEnglish("customer.not.found", new Object[]{loggedInUsername}));
     }
 
 

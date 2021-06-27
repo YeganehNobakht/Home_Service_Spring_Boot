@@ -17,7 +17,9 @@ public interface CustomerService {
 
     CustomerDto registerCustomer(CustomerDto customerDto, String siteURL) throws UnsupportedEncodingException, MessagingException, DuplicateEmailException, DuplicateUsernameException;
 
-    CustomerDto create(CustomerDto customerOrderDto) throws DuplicateEmailException, DuplicateUsernameException;
+    CustomerDto findDuplicateEmail(String email) throws DuplicateEmailException;
+
+    CustomerDto findDuplicateUsername(String username) throws DuplicateUsernameException;
 
     CustomerDto login(CustomerDto customerDto) throws PasswordNotFoundException, UserNameNotFoundException;
 
@@ -27,4 +29,6 @@ public interface CustomerService {
     void payByAccount(CustomerDto customerDto, double price);
 
     void updateBalance(Double balance, Integer id);
+
+    CustomerDto findByUsername(String loggedInUsername) throws CustomerNotFoundException;
 }
