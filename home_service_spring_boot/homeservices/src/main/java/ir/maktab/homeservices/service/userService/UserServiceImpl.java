@@ -7,11 +7,15 @@ import ir.maktab.homeservices.data.repository.User.UserRepository;
 import ir.maktab.homeservices.dto.UserDto;
 import ir.maktab.homeservices.dto.UserFilter;
 import ir.maktab.homeservices.dto.enums.UserRole;
+import ir.maktab.homeservices.exceptions.checkes.PasswordNotFoundException;
 import ir.maktab.homeservices.exceptions.checkes.ServiceNotFoundException;
+import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
 import ir.maktab.homeservices.service.mapper.UserMapper;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -25,12 +29,16 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final JavaMailSender mailSender;
+    private final PasswordEncoder passwordEncoder;
+    private final MaktabMessageSource maktabMessageSource;
 
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, JavaMailSender mailSender) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, JavaMailSender mailSender, PasswordEncoder passwordEncoder, MaktabMessageSource maktabMessageSource) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.mailSender = mailSender;
+        this.passwordEncoder = passwordEncoder;
+        this.maktabMessageSource = maktabMessageSource;
     }
 
     @Override
@@ -92,6 +100,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> findAll() {
         List<User> all = userRepository.findAll();
-        return all.stream().map(userMapper::toUserDto).collect(Collectors.toList());
+        List<User> userList = all.stream().filter(u->u.getUserRole().equals(UserRole.Manager)).collect(Collectors.toList());
+        return userList.stream().map(userMapper::toUserDto).collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public void checkForChangePassword(UserDto userDto, String oldPass, String newPass) throws PasswordNotFoundException {
+        String encodeOldPass = passwordEncoder.encode(oldPass);
+        String encodeNewPass = passwordEncoder.encode(newPass);
+
+        if (encodeOldPass.equals(userDto.getPassword()))
+            userRepository.updatePassword(userDto.getId(),encodeNewPass);
+        throw new PasswordNotFoundException(maktabMessageSource.getEnglish("password.not.found"));
     }
 }
