@@ -7,7 +7,9 @@ import ir.maktab.homeservices.dto.UserFilter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -26,6 +28,11 @@ public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecifi
     public User findByVerificationCode(String code);
 
     Optional<User> findByUsername(String username);
+
+    @Modifying
+    @Query("update User u set u.password=:password where u.id=:id")
+    void updatePassword(@Param("id")Integer id, @Param("password") String password);
+
 
     static Specification<User> filterUsers(UserFilter user, ServiceCategory serviceCategory) {
         return (Specification<User>) (root, query, criteriaBuilder) -> {
