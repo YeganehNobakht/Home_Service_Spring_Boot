@@ -8,11 +8,11 @@ import ir.maktab.homeservices.service.customerCommentService.CustomerCommentServ
 import ir.maktab.homeservices.service.customerOrderService.CustomerOrderService;
 import ir.maktab.homeservices.service.customerService.CustomerService;
 import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
+import ir.maktab.homeservices.service.securityService.SecurityService;
 import ir.maktab.homeservices.service.siteUrl.SiteUrl;
 import ir.maktab.homeservices.service.specialistService.SpecialistService;
 import ir.maktab.homeservices.service.suggestionService.SuggestionService;
 import ir.maktab.homeservices.service.validation.OnIncreaseBalance;
-import ir.maktab.homeservices.service.validation.OnLogin;
 import ir.maktab.homeservices.service.validation.OnRegister;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,8 +47,9 @@ public class CustomerController {
     private final SpecialistService specialistService;
     private final CustomerCommentService customerCommentService;
     private final SiteUrl siteUrl;
+    private final SecurityService securityService;
 
-    public CustomerController(CustomerService customerService, SuggestionService suggestionService, CustomerOrderService customerOrderService, MaktabMessageSource maktabMessageSource, SpecialistService specialistService, CustomerCommentService customerCommentService, SiteUrl siteUrl) {
+    public CustomerController(CustomerService customerService, SuggestionService suggestionService, CustomerOrderService customerOrderService, MaktabMessageSource maktabMessageSource, SpecialistService specialistService, CustomerCommentService customerCommentService, SiteUrl siteUrl, SecurityService securityService) {
         this.customerService = customerService;
         this.suggestionService = suggestionService;
         this.customerOrderService = customerOrderService;
@@ -56,6 +57,7 @@ public class CustomerController {
         this.specialistService = specialistService;
         this.customerCommentService = customerCommentService;
         this.siteUrl = siteUrl;
+        this.securityService = securityService;
     }
 
     /*
@@ -72,15 +74,14 @@ public class CustomerController {
         return new ModelAndView("customerLogin", "customerDto", new CustomerDto());
     }
 
-    @PostMapping("/register")
-    public String customerLogin
-            (@ModelAttribute("customerDto") @Validated(OnLogin.class) CustomerDto customerDto, Model model,
-             HttpServletRequest request) throws PasswordNotFoundException, UserNameNotFoundException {
+    @GetMapping("/register")
+    public String customerLogin(
+            HttpServletRequest request) throws PasswordNotFoundException, UserNameNotFoundException, CustomerNotFoundException {
 
         logger.info("...redirect to customer register page...");
-        CustomerDto customer = customerService.login(customerDto);
-        HttpSession session = request.getSession(true);
-        session.setAttribute("myCustomerDto", customer);
+        HttpSession session = request.getSession(false);
+        CustomerDto dto = customerService.findByUsername((String) session.getAttribute("username"));
+        session.setAttribute("myCustomerDto", dto);
         return "customerService";
     }
 
