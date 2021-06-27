@@ -19,6 +19,10 @@ public interface SpecialistService {
 
     SpecialistDto registerSpecialist(SpecialistSignUpDto specialistSignUpDto, String siteURL) throws UnsupportedEncodingException, MessagingException, DuplicateEmailException, DuplicateUsernameException;
 
+    SpecialistDto findDuplicateEmail(String email) throws DuplicateEmailException;
+
+    SpecialistDto findDuplicateUsername(String username) throws DuplicateUsernameException;
+
     void update(SpecialistDto specialistDto) throws SpecialistNotFoundException;
 
     SpecialistDto login(SpecialistDto specialistDto) throws SpecialistNotFoundException;

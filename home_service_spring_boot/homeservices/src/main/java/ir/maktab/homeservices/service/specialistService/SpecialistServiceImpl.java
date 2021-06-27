@@ -8,20 +8,16 @@ import ir.maktab.homeservices.data.repository.specialist.SpecialistRepository;
 import ir.maktab.homeservices.dto.ServiceCategoryDto;
 import ir.maktab.homeservices.dto.SpecialistDto;
 import ir.maktab.homeservices.dto.SpecialistSignUpDto;
-import ir.maktab.homeservices.dto.UserFilter;
 import ir.maktab.homeservices.exceptions.checkes.DuplicateEmailException;
 import ir.maktab.homeservices.exceptions.checkes.DuplicateUsernameException;
-import ir.maktab.homeservices.exceptions.checkes.ServiceNotFoundException;
 import ir.maktab.homeservices.exceptions.checkes.SpecialistNotFoundException;
 import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
 import ir.maktab.homeservices.service.mapper.Mapper;
-import ir.maktab.homeservices.service.serviceCategory.ServiceCategoryService;
 import ir.maktab.homeservices.service.userService.UserService;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
@@ -63,7 +59,6 @@ public class SpecialistServiceImpl implements SpecialistService {
                 .setUserStatus(UserStatus.WAITING);
 
 
-
         Optional<Specialist> specialist1 = specialistRepository.findByUsername(specialistDto.getUsername());
         if (specialist1.isPresent()) {
             throw new DuplicateUsernameException(maktabMessageSource.getEnglish("duplicate.username"));
@@ -95,27 +90,42 @@ public class SpecialistServiceImpl implements SpecialistService {
                 .setPassword(specialistSignUpDto.getPassword())
                 .setProfilePicture(specialistSignUpDto.getProfilePicture());
 
-        Optional<Specialist> specialist1 = specialistRepository.findByUsername(specialistDto.getUsername());
-        if (specialist1.isPresent()) {
-            throw new DuplicateUsernameException(maktabMessageSource.getEnglish("duplicate.username"));
-        } else {
-            Optional<Specialist> specialist2 = specialistRepository.findByEmail(specialistDto.getEmail());
-            if (specialist2.isPresent()) {
-                throw new DuplicateEmailException(maktabMessageSource.getEnglish("duplicate.email"));
-            } else {
-                String encodedPassword = passwordEncoder.encode(specialistDto.getPassword());
-                specialistDto.setPassword(encodedPassword);
+        findDuplicateEmail(specialistDto.getEmail());
+        findDuplicateUsername(specialistDto.getUsername());
 
-                String randomCode = RandomString.make(64);
-                specialistDto.setVerificationCode(randomCode);
-                specialistDto.setEnabled(false);
+        //TODO:: method
+        String encodedPassword = passwordEncoder.encode(specialistDto.getPassword());
+        specialistDto.setPassword(encodedPassword);
 
-                specialistRepository.save(mapper.toSpecialist(specialistDto));
-                userService.sendVerificationEmail(specialistDto, siteURL);
-                return specialistDto;
-            }
-        }
+        String randomCode = RandomString.make(64);
+        specialistDto.setVerificationCode(randomCode);
+        specialistDto.setEnabled(false);
+
+        specialistRepository.save(mapper.toSpecialist(specialistDto));
+        userService.sendVerificationEmail(specialistDto, siteURL);
+        return specialistDto;
+
     }
+
+
+    @Override
+    public SpecialistDto findDuplicateEmail(String email) throws DuplicateEmailException {
+        Optional<Specialist> specialist = specialistRepository.findByEmail(email);
+        if (specialist.isPresent())
+            throw new DuplicateEmailException(maktabMessageSource.getEnglish("duplicate.email"));
+        return null;
+
+    }
+
+    @Override
+    public SpecialistDto findDuplicateUsername(String username) throws DuplicateUsernameException {
+        Optional<Specialist> specialist = specialistRepository.findByUsername(username);
+        if (specialist.isPresent())
+            throw new DuplicateUsernameException(maktabMessageSource.getEnglish("duplicate.username"));
+        return null;
+
+    }
+
 
     @Override
     public void update(SpecialistDto specialistDto) throws SpecialistNotFoundException {
@@ -140,24 +150,23 @@ public class SpecialistServiceImpl implements SpecialistService {
     public void updateRate(SpecialistDto specialistDto, Double score) {
         double rate = specialistDto.getRate();
         Integer counter;
-        if (rate==0){
-            counter = specialistDto.getCommentCounter()+1;
-            specialistRepository.updateRateAndCommentCounter(specialistDto.getId(),score,counter);
-        }
-        else {
+        if (rate == 0) {
+            counter = specialistDto.getCommentCounter() + 1;
+            specialistRepository.updateRateAndCommentCounter(specialistDto.getId(), score, counter);
+        } else {
             counter = specialistDto.getCommentCounter();
             Integer newCounter = ++counter;
             double newRate = ((counter * rate) + score) / (newCounter);
-            specialistRepository.updateRateAndCommentCounter(specialistDto.getId(),newRate,newCounter);
+            specialistRepository.updateRateAndCommentCounter(specialistDto.getId(), newRate, newCounter);
         }
     }
 
     @Transactional
     @Override
     public void returnMoney(double price, SpecialistDto specialistDto) {
-            double money = price*retunedMoney.getDiscount();
-            double balance = specialistDto.getBalance()+money;
-            specialistRepository.updateBalance(specialistDto.getId(),balance);
+        double money = price * retunedMoney.getDiscount();
+        double balance = specialistDto.getBalance() + money;
+        specialistRepository.updateBalance(specialistDto.getId(), balance);
     }
 
     @Override
@@ -189,7 +198,6 @@ public class SpecialistServiceImpl implements SpecialistService {
         List<Specialist> specialistList = specialistRepository.findAll();
         return specialistList.stream().map(mapper::toSpecialistDto).collect(Collectors.toList());
     }
-
 
 
 }
