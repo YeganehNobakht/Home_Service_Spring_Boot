@@ -1,6 +1,5 @@
 package ir.maktab.homeservices.web;
 
-import ir.maktab.homeservices.data.entity.Customer;
 import ir.maktab.homeservices.data.entity.enums.OrderStatus;
 import ir.maktab.homeservices.dto.*;
 import ir.maktab.homeservices.exceptions.checkes.*;
@@ -76,11 +75,11 @@ public class CustomerController {
 
     @GetMapping("/register")
     public String customerLogin(
-            HttpServletRequest request) throws PasswordNotFoundException, UserNameNotFoundException, CustomerNotFoundException {
+            HttpServletRequest request , @SessionAttribute("loginUsername") String username) throws CustomerNotFoundException {
 
         logger.info("...redirect to customer register page...");
         HttpSession session = request.getSession(false);
-        CustomerDto dto = customerService.findByUsername((String) session.getAttribute("username"));
+        CustomerDto dto = customerService.findByUsername((String) session.getAttribute("loginUsername"));
         session.setAttribute("myCustomerDto", dto);
         return "customerService";
     }
@@ -97,6 +96,13 @@ public class CustomerController {
         return "register_success";
     }
 
+
+    @GetMapping("/accountInfo")
+    public String showAccountInfo() {
+        logger.info("...account info...");
+        return "customerAccountInfo";
+    }
+
     @GetMapping("/changePass")
     public ModelAndView changePass() {
         logger.info("...redirect to customer change password page...");
@@ -108,7 +114,7 @@ public class CustomerController {
                                @SessionAttribute("myCustomerDto") CustomerDto customerDto) throws CustomerNotFoundException, PasswordNotFoundException {
 
         logger.info("...changing customer password process...");
-        Customer customer = customerService.changePassword(customerDto.getUsername(), changePassDto.getOldPass(), changePassDto.getNewPass());
+        customerService.changePassword(customerDto, changePassDto.getOldPass(), changePassDto.getNewPass());
         Map<String, String> message = new HashMap<>();
         message.put("message", maktabMessageSource.getEnglish("Password.successfully.changed"));
         return new ModelAndView("customerChangePass", message);
@@ -122,7 +128,7 @@ public class CustomerController {
     }
 
     @GetMapping("/currentOrder")
-    public String currentOrder(@SessionAttribute("myCustomerDto") CustomerDto customerDto, Model model) {
+    public String currentOrder(@SessionAttribute("myCustomerDto") CustomerDto customerDto,HttpServletRequest request, Model model) {
 
         logger.info("...redirect to customer current order page...");
         List<CustomerOrderDto> orders = customerOrderService.findByOrderStatusNotAndCustomer_Id(OrderStatus.PAID, customerDto.getId());
@@ -130,17 +136,24 @@ public class CustomerController {
             model.addAttribute("message", maktabMessageSource.getEnglish("No.current.order"));
         }
         model.addAttribute("orders", orders);
+        HttpSession session = request.getSession();
+        session.setAttribute("ordersForAUser",orders);
+        session.setAttribute("waitForOffer",OrderStatus.WAITING_FOR_SPECIALIST_CHOSE);
+        session.setAttribute("waitForPay",OrderStatus.WAIT_FOR_PAY);
+
         return "customerCurrentOrder";
     }
 
     @GetMapping("/getSuggestion/{orderId}")
     public String findOrder(@PathVariable(value = "orderId") Integer orderId,
-                            Model model, HttpServletRequest request) throws OrderException, OrderNoSuggestionException, OrderNotFoundException {
+                            @SessionAttribute("ordersForAUser" )List<CustomerOrderDto> orders,
+                            Model model, HttpServletRequest request) throws OrderException,
+                            OrderNoSuggestionException, OrderNotFoundException {
 
         logger.info("...show all suggestions that related to an order...");
         CustomerOrderDto orderDto = customerOrderService.findById(orderId);
-        if (orderDto.getOrderStatus().equals(OrderStatus.WAITING_FOR_SPECIALIST_OFFER)) {
-            logger.info("...find all order with WAITING_FOR_SPECIALIST_OFFER status...");
+        if (orderDto.getOrderStatus().equals(OrderStatus.WAITING_FOR_SPECIALIST_CHOSE)) {
+            logger.info("...order status is waiting for select specialist...");
             List<SuggestionDto> suggestions = suggestionService.findByCustomerOrder(orderDto);
             model.addAttribute("suggestions", suggestions);
 
@@ -152,31 +165,36 @@ public class CustomerController {
             //TODO:: return error: "id is wrong" to specialistShowOrder
             return "customerOrderSuggestion";
         }
-        if (orderDto.getOrderStatus().equals(OrderStatus.WAITING_FOR_SPECIALIST_CHOSE)) {
+        if (orderDto.getOrderStatus().equals(OrderStatus.WAITING_FOR_SPECIALIST_OFFER)) {
             logger.info("...order with WAITING_FOR_SPECIALIST_CHOSE status...");
-            model.addAttribute("message", maktabMessageSource.getEnglish("Your.order.is.waiting.for.expert.approval"));
+            model.addAttribute("message", maktabMessageSource.getEnglish("Your.order.is.waiting.for.expert.suggestion"));
+            model.addAttribute("orders", orders);
             return "customerCurrentOrder";
         }
         if (orderDto.getOrderStatus().equals(OrderStatus.WAITING_FOR_SPECIALIST_COME)) {
             logger.info("...order with WAITING_FOR_SPECIALIST_COME status...");
             model.addAttribute("message", maktabMessageSource.getEnglish("Your.order.is.waiting.for.a.specialist.to.arrive"));
+            model.addAttribute("orders", orders);
             return "customerCurrentOrder";
         }
         if (orderDto.getOrderStatus().equals(OrderStatus.STARTED)) {
             logger.info("... order with STARTED status...");
             model.addAttribute("message", maktabMessageSource.getEnglish("Your.order.is.in.progress"));
+            model.addAttribute("orders", orders);
             return "customerCurrentOrder";
         }
         if (orderDto.getOrderStatus().equals(OrderStatus.FINISHED_WORK)) {
             logger.info("...order with FINISHED_WORK status...");
             model.addAttribute("message", maktabMessageSource.getEnglish("Your.order.is.finished,.now.you.can.pay.it"));
+            model.addAttribute("orders", orders);
             return "customerCurrentOrder";
         }
-        if (orderDto.getOrderStatus().equals(OrderStatus.WAIT_FOR_PAID)) {
+        if (orderDto.getOrderStatus().equals(OrderStatus.WAIT_FOR_PAY)) {
             logger.info("...order with WAIT_FOR_PAID status...");
             HttpSession session = request.getSession(true);
             session.setAttribute("price", orderDto.getPrice());
             session.setAttribute("customerOrderDto", orderDto);
+            model.addAttribute("orders", orders);
             return "customerPaymentInformations";
         }
         return "customerCurrentOrder";
@@ -203,7 +221,7 @@ public class CustomerController {
         logger.info("...show finishing orders...");
         List<CustomerOrderDto> customerOrderDto = new ArrayList<>();
         try {
-            customerOrderDto = customerOrderService.findUserByStatusAndCustomer(OrderStatus.WAIT_FOR_PAID, customerDto);
+            customerOrderDto = customerOrderService.findUserByStatusAndCustomer(OrderStatus.WAIT_FOR_PAY, customerDto);
         } catch (OrderNotFoundException e) {
             logger.warn("...there is not any finished order...");
             model.addAttribute("message", e.getMessage()/*maktabMessageSource.getEnglish(e.getMessage(),new Object[]{OrderStatus.WAIT_FOR_PAID,customerDto.getUsername()})*/);
@@ -264,7 +282,7 @@ public class CustomerController {
         orderDto.setCustomerCommentDto(customerCommentDto);
         CustomerCommentDto commentDto = customerCommentService.save(customerCommentDto);
         customerOrderService.updateComment(orderId, commentDto);
-        specialistService.updateRate(orderDto.getSpecialistDto(), Double.parseDouble(commentDto.getScore()));
+        specialistService.updateRate(orderDto.getSpecialistDto(), commentDto.getScore());
         model.addAttribute("success", maktabMessageSource.getEnglish("comment.add", new Object[]{orderId}));
         return "customerSuccessPage";
     }
