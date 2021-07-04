@@ -20,11 +20,11 @@ public class OrderDto {
     @NotNull(message = "blank")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date workDate;
-    @NotBlank(message = "city.not.blank")
+//    @NotBlank(message = "city.not.blank")
     private String city;
-    @NotBlank(message = "street.not.blank")
+//    @NotBlank(message = "street.not.blank")
     private String street;
-    @NotBlank(message = "alley.not.blank")
+//    @NotBlank(message = "alley.not.blank")
     private String alley;
     private CustomerDto customerDto;
     private SpecialistDto specialistDto;
