@@ -22,19 +22,7 @@
     <link href="<p:url value="/static/image"/>" rel="stylesheet"/>
 </head>
 <body>
-<%
 
-    HttpSession session1 = request.getSession(false);
-    Object o = (session1.getAttribute("myManagerDto"));
-    PrintWriter writer = response.getWriter();
-    if (o == null) {
-        writer.println("<script type=\"text/javascript\">");
-        writer.println("alert('Please login first');");
-        writer.println("location='/';");
-        writer.println("</script>");
-    } else {
-
-%>
 <nav class="navbar navbar-expand navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="">
@@ -51,10 +39,10 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle active" href="" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        ${sessionScope.myCustomerDto.username}
+                        ${sessionScope.myManagerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/mngr/changePass">Change Password</a></li>
+<%--                        <li><a class="dropdown-item" href="/mngr/changePass">Change Password</a></li>--%>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -71,7 +59,8 @@
 
         </div>
         <a class="navbar-brand" href="/mngr/userInfo"><img src="/static/image/order.png"
-                                                           alt="" width="30" height="25" class="d-inline-block align-text-top">Get Users Info</a>
+                                                           alt="" width="30" height="25"
+                                                           class="d-inline-block align-text-top">Get Users Info</a>
     </div>
 </nav>
 <hr>
@@ -84,6 +73,15 @@
             </button>
             <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
                     onclick="parent.location='/mngr/subService'">Add Sub-Service
+            </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/Speciality'">Add Speciality
+            </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/reportOfUsers'">Users Activities
+            </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/reportOfOrders'">Orders
             </button>
         </div>
 
@@ -100,7 +98,7 @@
                     <tr>
                         <td>
                             <form:select path="speciality" size="1" name="serviceCategoryList">
-                                <form:option value="" >...SELECT...</form:option>
+                                <form:option value="">...Service...</form:option>
                                 <c:forEach items="${sessionScope.services}" var="list">
                                     <form:option value="${list.name}">"${list.name}"</form:option>
                                 </c:forEach>
@@ -108,13 +106,9 @@
                         </td>
                         <td>
                             <form:select path="userRole" size="1" name="userRole">
-                                <form:option value="" >...SELECT...</form:option>
+                                <form:option value="">...Role...</form:option>
                                 <form:option value="${sessionScope.role[0]}"/>
                                 <form:option value="${sessionScope.role[1]}"/>
-<%--                                <form:option value="NONE" >...SELECT...</form:option>--%>
-<%--                                <c:forEach items="${role}" var="list">--%>
-<%--                                    <form:option value="${list}">"${list}"</form:option>--%>
-<%--                                </c:forEach>--%>
                             </form:select>
                         </td>
                     </tr>
@@ -145,7 +139,8 @@
                         <td>Last Name</td>
                         <td>Email</td>
                         <td>Status</td>
-                        <td>Selection</td>
+                        <td>Aproval</td>
+                        <td>See Orders</td>
                     </tr>
                     <c:forEach items="${allUser}" var="o">
                         <tr>
@@ -154,7 +149,57 @@
                             <td>${o.lastName}</td>
                             <td>${o.email}</td>
                             <td>${o.userStatus}</td>
-                            <td><a name="Select" onclick="choose(${o.id})"><button type="button">Order History</button></a></td>
+                            <c:choose>
+                                <c:when test="${o.userStatus eq sessionScope.userStatus}">
+<%--                                    <c:choose>--%>
+<%--                                        <c:when test="${o.userStatus eq sessionScope.userStatus}">--%>
+                                            <td>
+                                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                        data-target="#exampleModal">Confirm
+                                                </button>
+                                            </td>
+                                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                                                 aria-labelledby="exampleModalLabel"
+                                                 aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">Approval
+                                                                title</h5>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Are you sure you want to confirm this user?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                    data-dismiss="modal">Close
+                                                            </button>
+                                                            <a name="Select" onclick="confirm(${o.id})">
+                                                                <button type="button" class="btn btn-primary">Confirm
+                                                                </button>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <%--                                <a name="Select" onclick="confirm(${o.id})"><button type="button" class="btn btn-success">Confirm User</button></a>--%>
+<%--                                        </c:when>--%>
+<%--                                        <c:otherwise>--%>
+<%--                                            <td></td>--%>
+<%--                                        </c:otherwise>--%>
+<%--                                    </c:choose>--%>
+                                </c:when>
+                                <c:otherwise>
+                                    <td></td>
+                                </c:otherwise>
+                            </c:choose>
+                            <td><a name="Select" onclick="choose(${o.id})">
+                                <button type="button" class="btn btn-success">Order History</button>
+                            </a></td>
                         </tr>
                     </c:forEach>
                 </table>
@@ -164,13 +209,17 @@
     </div>
 
 </div>
-<%
-    }
-%>
+
+
 <script>
     function choose(id) {
         console.log("in")
-        window.location.href = "http://localhost:8080/mngr/orderForAUser/"+id
+        window.location.href = "${pageContext.request.contextPath}/mngr/orderForAUser/" + id
+    }
+
+    function confirm(id) {
+        console.log("in")
+        window.location.href = "${pageContext.request.contextPath}/mngr/confirmUser/" + id
     }
 </script>
 
