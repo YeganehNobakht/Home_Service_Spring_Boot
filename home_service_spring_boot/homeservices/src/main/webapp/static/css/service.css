@@ -1,12 +1,12 @@
 body {
-    background-color: #fafaf9;
+    background-color: white;
     /*height: 100vh;*/
 
 }
 
 .myHeader {
     height: 20%;
-    background-color: #ffffff;
+    background-color:white;
 }
 
 .m {
@@ -15,16 +15,60 @@ body {
     width: 100%;
     height: 80%;
 }
+.m1prim{
+    background-color: #cecece;
+    height: 500px;
+    width: 20%;
+}
+
+.mMAP {
+    width: 100%;
+    height: 80%;
+}
 
 .m1 {
     background-color: #cecece;
-    height: 100vh;
+    height: 1000px;
     width: 20%;
+}
+
+.forMap{
+    height: 50%;
+    width:50%;
 }
 
 .m11 {
     height: 100vh;
     width: 80%;
+
+}
+.mAddService1{
+    height: 700px;
+    width: 40%;
+    margin-right: 2%;
+    margin-left: 2%;
+}.mAddService2{
+    height: 500px;
+    width: 40%;
+    margin-right: 2%;
+    margin-left: 2%;
+}
+.boxAddService{
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 10%;
+}
+.m111{
+    height: 100vh;
+    width: 40%;
+}
+.m1F{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+.m1F1{
 
 }
 
@@ -40,7 +84,7 @@ body {
 }
 .m3 {
     width: 100%;
-    height: 20%;
+    height: 5%;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
@@ -60,7 +104,29 @@ body {
     width: 40%;
     height: 100%;
 }
-    .box{
-        margin: 10%;
-    }
+.box{
+    margin: 10%;
+}
+#tbl1 {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#tbl1 td, #tbl1 th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#tbl1 tr:nth-child(even){background-color: #f2f2f2;}
+
+#tbl1 tr:hover {background-color: #ddd;}
+
+#tbl1 th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #eca71d;
+    color: white;
+}
 
