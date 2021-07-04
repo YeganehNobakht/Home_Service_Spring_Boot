@@ -7,6 +7,7 @@ import ir.maktab.homeservices.dto.*;
 import ir.maktab.homeservices.exceptions.checkes.ManagerNotFoundException;
 import ir.maktab.homeservices.exceptions.checkes.ServiceNotFoundException;
 import ir.maktab.homeservices.exceptions.checkes.SpecialistNotFoundException;
+import ir.maktab.homeservices.exceptions.checkes.UserNotFoundException;
 import ir.maktab.homeservices.service.customerService.CustomerService;
 import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
 import ir.maktab.homeservices.service.mapper.ManagerMapper;
@@ -115,6 +116,11 @@ public class managerServiceImpl implements ManagerService {
             return managerMapper.toManagerDto(manager.get());
         throw new ManagerNotFoundException(maktabMessageSource.getEnglish("manager.not.found", new Object[]{username}));
 
+    }
+
+    @Override
+    public void confirmUser(Integer id) throws UserNotFoundException {
+        userService.confirmeUser(id);
     }
 
 
