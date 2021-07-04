@@ -54,7 +54,7 @@
                         ${sessionScope.mySpecialistDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Account Info</a></li>
+                        <%--                        <li><a class="dropdown-item" href="#">Account Info</a></li>--%>
                         <li><a class="dropdown-item" href="/specialist/changePass">Change Password</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -65,10 +65,6 @@
 
                 <li class="nav-item">
                     <a class="nav-link " aria-current="page" href="/">Home</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="<c:url value="/customer/login"/>">Registration Of Customer</a>
                 </li>
 
             </ul>
@@ -91,19 +87,12 @@
             <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
                     onclick="parent.location='/specialist/showSpeciality'">Show Speciality
             </button>
-            <%--            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"--%>
-            <%--                    onclick="parent.location='/specialist/approveOrder'">Approve Orders--%>
-            <%--            </button>--%>
-            <%--            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"--%>
-            <%--                    onclick="parent.location='/specialist/starOrder'"> Order--%>
-            <%--            </button>--%>
         </div>
 
     </div>
-    <div class="m11 backColor">
+    <div class="m11 ">
         <h5 class="d-flex justify-content-center text-info">${message}</h5>
         <h5 class="d-flex justify-content-center text-danger">${error}</h5>
-        <h3 class="d-flex justify-content-center text-black">Add New Speciality:</h3>
         <br>
         <table class="table table-striped table-secondary table-hover">
             <tr>
@@ -117,7 +106,7 @@
         </table>
 
 
-        <div class="bgc">
+        <div class="bgc1" style="background-color: chartreuse">
             <form id="loginForm" action="/specialist/addSpeciality" method="post"><br><br>
                 <table class="table table-striped table-hover">
                     <tr>
@@ -125,39 +114,14 @@
                         <td><select name="service" id="service" style="width: 202px" size="1">
                             <option value="NONE">...SELECT...</option>
                             <c:forEach items="${serviceList}" var="list">
-                                <option value="${list.name}">${list.name}</option>
+                            <option value="${list.name}">${list.name}</option>
                             </c:forEach>
                     </tr>
-
-<%--                    <tr>--%>
-<%--                        <td><label for="service">Add New Service:</label></td>--%>
-<%--                        <td><select name="service" id="service" style="width: 202px" size="1">--%>
-<%--                            <option value="NONE">...SELECT...</option>--%>
-<%--                            <c:set var="continue" value="0"/>--%>
-<%--                            <c:forEach items="${serviceList}" var="list">--%>
-
-<%--                                <c:forEach items="${specialistServiceList}" var="s">--%>
-<%--                                    <c:choose>--%>
-<%--                                    <c:when test="${list.id}.equals(${s.id})">--%>
-<%--                                        <c:set var="Continue" value="1"/>--%>
-<%--                                    </c:when>--%>
-<%--                                    </c:choose>--%>
-<%--                                    <c:if test="${continue==0}">--%>
-<%--                                        <c:if test="${list.id ne s.id}">--%>
-<%--                                            <option value="${list.name}">${list.name}</option>--%>
-<%--                                            <c:set var="Continue" value="1"/>--%>
-<%--                                        </c:if>--%>
-<%--                                    </c:if>--%>
-<%--                                </c:forEach>--%>
-<%--                            </c:forEach>--%>
-<%--                        </select>--%>
-<%--                        </td>--%>
-<%--                    </tr>--%>
                     <tr>
-                    <td></td>
-                    <td>
-                        <button id="add" name="add">Add</button>
-                    </td>
+                        <td></td>
+                        <td>
+                            <button id="add" name="add">Add</button>
+                        </td>
                     </tr>
                 </table>
             </form>
