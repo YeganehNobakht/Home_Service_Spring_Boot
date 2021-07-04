@@ -5,6 +5,7 @@ import ir.maktab.homeservices.dto.SpecialistDto;
 import ir.maktab.homeservices.dto.SpecialistSignUpDto;
 import ir.maktab.homeservices.exceptions.checkes.DuplicateEmailException;
 import ir.maktab.homeservices.exceptions.checkes.DuplicateUsernameException;
+import ir.maktab.homeservices.exceptions.checkes.PasswordNotFoundException;
 import ir.maktab.homeservices.exceptions.checkes.SpecialistNotFoundException;
 
 import javax.mail.MessagingException;
@@ -13,15 +14,13 @@ import java.util.List;
 
 public interface SpecialistService {
 
-    SpecialistDto create(SpecialistSignUpDto specialistDto) throws DuplicateUsernameException, DuplicateEmailException;
-
     void delete(Integer id);
 
     SpecialistDto registerSpecialist(SpecialistSignUpDto specialistSignUpDto, String siteURL) throws UnsupportedEncodingException, MessagingException, DuplicateEmailException, DuplicateUsernameException;
 
-    SpecialistDto findDuplicateEmail(String email) throws DuplicateEmailException;
+    void findDuplicateEmail(String email) throws DuplicateEmailException;
 
-    SpecialistDto findDuplicateUsername(String username) throws DuplicateUsernameException;
+    void findDuplicateUsername(String username) throws DuplicateUsernameException;
 
     void update(SpecialistDto specialistDto) throws SpecialistNotFoundException;
 
@@ -38,4 +37,10 @@ public interface SpecialistService {
     SpecialistDto findById(Integer id) throws SpecialistNotFoundException;
 
     List<SpecialistDto> findAll();
+
+    void changePassword(SpecialistDto specialistDto, String oldPass, String newPass) throws PasswordNotFoundException, SpecialistNotFoundException;
+
+    boolean checkforStatus(SpecialistDto dto);
+
+    List<SpecialistDto> findApproveSpecialist();
 }
