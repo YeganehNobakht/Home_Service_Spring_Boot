@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Collection;
+
 @Component
 public class SuccessHandler implements AuthenticationSuccessHandler {
 
@@ -27,17 +28,17 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         HttpSession session = request.getSession(true);
         UserDetails userDetail = (UserDetails) authentication.getPrincipal();
-        session.setAttribute("username",userDetail.getUsername());
+        session.setAttribute("loginUsername", userDetail.getUsername());
         for (GrantedAuthority grantedAuthority : authorities) {
             System.out.println("role " + grantedAuthority.getAuthority());
-            if (grantedAuthority.getAuthority().equals("ROLE_"+UserRole.Customer.name())) {
+            if (grantedAuthority.getAuthority().equals("ROLE_" + UserRole.Customer.name())) {
 
                 redirectUrl = "/customer/register";
                 break;
-            } else if (grantedAuthority.getAuthority().equals("ROLE_"+UserRole.Specialist.name())) {
+            } else if (grantedAuthority.getAuthority().equals("ROLE_" + UserRole.Specialist.name())) {
                 redirectUrl = "/specialist/register";
                 break;
-            } else if (grantedAuthority.getAuthority().equals("ROLE_"+UserRole.Manager.name())) {
+            } else if (grantedAuthority.getAuthority().equals("ROLE_" + UserRole.Manager.name())) {
                 redirectUrl = "/mngr/register";
                 break;
             }
