@@ -18,6 +18,7 @@ public class UserMapperImpl implements UserMapper {
                 .setName(userDto.getName())
                 .setLastName(userDto.getLastName())
                 .setEmail(userDto.getEmail())
+                .setDate(userDto.getDate())
                 .setPassword(userDto.getPassword())
                 .setUserStatus(userDto.getUserStatus())
                 .setUserRole(userDto.getUserRole())
@@ -37,6 +38,7 @@ public class UserMapperImpl implements UserMapper {
                 .setUserStatus(user.getUserStatus())
                 .setUserRole(user.getUserRole())
                 .setEnabled(user.isEnabled())
+                .setDate(user.getDate())
                 .setVerificationCode(user.getVerificationCode());
     }
 }
