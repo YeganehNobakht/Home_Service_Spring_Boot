@@ -1,5 +1,6 @@
 package ir.maktab.homeservices.configuration;
 
+import ir.maktab.homeservices.service.CustomAuthenticationFailureHandler;
 import ir.maktab.homeservices.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,10 +21,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
+    private final CustomAuthenticationFailureHandler failureHandler;
 
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService, AuthenticationSuccessHandler authenticationSuccessHandler) {
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService, AuthenticationSuccessHandler authenticationSuccessHandler, CustomAuthenticationFailureHandler failureHandler) {
         this.userDetailsService = userDetailsService;
         this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.failureHandler = failureHandler;
     }
 
     @Override
@@ -35,13 +38,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/","/customer/register","/verify/**", "/login", "/customer/signUp","/specialist/registerSignUp","/specialist/signUp", "/resources/**","/captcha").permitAll()
+                .antMatchers("/","/accessdenied","/customer/getSuggestion/**","/resources/**", "/static/**", "/css/**", "/js/**","/app/**","/assets/**","/images/**","/libs","/image/","/static/css/firstPage.css","/captcha","/webjars/**","/customer/register","/verify/**", "/login", "/customer/signUp","/specialist/registerSignUp","/specialist/signUp","/captcha","/webapp/WEB-INF/views/app/**","/webapp/WEB-INF/views/lib/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/login").usernameParameter("username").passwordParameter("password")
                 .loginProcessingUrl("/userLogin")
                 .successHandler(authenticationSuccessHandler)
+                .failureHandler(failureHandler)
                 .and()
                 .logout()
                 .logoutSuccessUrl("/");
