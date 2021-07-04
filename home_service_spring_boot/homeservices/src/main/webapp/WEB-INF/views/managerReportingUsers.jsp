@@ -1,3 +1,4 @@
+
 <%@ page import="java.io.PrintWriter" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://www.springframework.org/tags" %>
@@ -50,10 +51,10 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle active" href="" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        ${sessionScope.myCustomerDto.username}
+                        ${sessionScope.myManagerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/mngr/changePass">Change Password</a></li>
+<%--                        <li><a class="dropdown-item" href="/mngr/changePass">Change Password</a></li>--%>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -70,7 +71,8 @@
 
         </div>
         <a class="navbar-brand" href="/mngr/userInfo"><img src="/static/image/order.png"
-                                                           alt="" width="30" height="25" class="d-inline-block align-text-top">Get Users Info</a>
+                                                           alt="" width="30" height="25"
+                                                           class="d-inline-block align-text-top">Get Users Info</a>
     </div>
 </nav>
 <hr>
@@ -88,43 +90,141 @@
                     onclick="parent.location='/mngr/Speciality'">Add Speciality
             </button>
             <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
-                    onclick="parent.location='/mngr/reportOfUsers'">Report Of Users
+                    onclick="parent.location='/mngr/reportOfUsers'">Users Activities
+            </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/reportOfOrders'">Orders
             </button>
         </div>
 
-        <form >
-            <table class="table table-striped table-warning table-hover d-flex justify-content-center">
-
-                <tr>
-                    <td>
-                        <input id="maxSuggesstion" name="maxSuggesstion" placeHolder="Max Suggesstion"/>
-                    </td>
-                    <td>
-                        <input id="minSuggesstion" name="minSuggesstion" placeHolder="Min Suggesstion"/>
-                    </td>
-                    <td>
-                        <input id="maxOrder" name="maxOrder" placeHolder="Max Order"/>
-                    </td>
-                    <td>
-                        <input id="minOrder" name="minOrder" placeHolder="Min Order"/>
-                    </td>
-                    <td>
-                        <input id="startDate" name="startDate" placeHolder="Start Date"/>
-                    </td>
-                    <td>
-                        <input id="endDate" name="endDate" placeHolder="End Date"/>
-                    </td>
-                </tr>
-
-            </table>
-        </form>
     </div>
     <div class="m11">
         <h5 class="d-flex justify-content-center text-info">${message}</h5>
         <h5 class="d-flex justify-content-center text-danger">${error}</h5>
-    </div>
+
+
+
+    <form>
+        <table class="table table-striped table-warning table-hover d-flex justify-content-center">
+
+            <tr>
+                <td colspan="2"><label class="d-flex justify-content-center">Filter for specialist</label></td>
+            </tr>
+            <tr>
+                <td>
+                    <input id="maxSuggesstion" name="maxSuggesstion" placeHolder="Max Suggesstion"/>
+                </td>
+                <td>
+                    <input id="minSuggesstion" name="minSuggesstion" placeHolder="Min Suggesstion"/>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><label class="d-flex justify-content-center">Filter for specialist</label></td>
+            </tr>
+            <tr>
+                <td>
+                    <input id="maxOrder" name="maxOrder" placeHolder="Max Order"/>
+
+                </td>
+                <td>
+                    <input id="minOrder" name="minOrder" placeHolder="Min Order"/>
+                </td>
+            </tr>
+            <tr>
+
+                <td>
+                    <input id="startDate" name="startDate" placeHolder="Start Date"/>
+                </td>
+                <td>
+                    <input id="endDate" name="endDate" placeHolder="End Date"/>
+                </td>
+            </tr>
+
+        </table>
+    </form>
+        <button type="submit" style="margin-left: 385px" class="btn btn-primary d-flex justify-content-center" id="submit">Submit</button>
+
+        <table id="tbl1">
+
+    </table>
+
 
 </div>
+</div>
+
+<script>
+    function formToJson() {
+        return JSON.stringify({
+            "maxNumSuggestion": $('#maxSuggesstion').val(),
+            "minNumSuggestion": $('#minSuggesstion').val(),
+            "maxNumOrders": $('#maxOrder').val(),
+            "minNumOrders": $('#minOrder').val(),
+            "startDate": $('#startDate').val(),
+            "endDate": $('#endDate').val()
+        });
+    }
+
+    $(document).ready(function(){
+        console.log("in")
+        console.log(formToJson())
+        // click on button submit
+        $("#submit").on('click', function(){
+            $("#tbl1").empty()
+            var row ="<tr><th >Name</th><th >Last Name</th><th>Email</th><th>UserStatus</th><th>User Role</th><th>Join Date</th></tr>";
+            $("#tbl1 tr").remove();
+            $("#tbl1").append(row)
+            $.ajax({
+                url : "/managerRestController/filterUsers",
+                contentType : "application/json",
+                type : "POST",
+                data: formToJson(),
+                success : function (result) {
+                    $.each(result, function (i, data)
+                    {
+                        var newrow ="";
+                        newrow+="<tr><td>"+data.name+"</td><td >"+data.lastName+"</td><td>"+data.email+"</td><td>"+data.userStatus+"</td><td>"+data.userRole+"</td><td >"+(!data.date?"":data.date)+"</td></tr>";
+                        $("#tbl1").append(newrow);
+                    });
+                },
+                error: function (result) {
+                    document.getElementById("result").innerHTML = result;
+
+                }
+            })
+
+        });
+    });
+    $(document).ready(function(){
+        console.log("in")
+        console.log(formToJson())
+        // click on button submit
+        $("#tbl1").empty()
+            var row ="<tr><th >Name</th><th >Last Name</th><th>Email</th><th>UserStatus</th><th>User Role</th><th>Join Date</th></tr>";
+            $("#tbl1 tr").remove();
+            $("#tbl1").append(row)
+            $.ajax({
+                url : "/managerRestController/filterUsers",
+                contentType : "application/json",
+                type : "POST",
+                data: formToJson(),
+                success : function (result) {
+                    $.each(result, function (i, data)
+                    {
+                        var newrow ="";
+                        newrow+="<tr><td>"+data.name+"</td><td >"+data.lastName+"</td><td>"+data.email+"</td><td>"+data.userStatus+"</td><td>"+data.userRole+"</td><td >"+(!data.date?"":data.date)+"</td></tr>";
+                        $("#tbl1").append(newrow);
+                    });
+                },
+                error: function (result) {
+                    document.getElementById("result").innerHTML = result;
+
+                }
+            })
+
+
+    });
+
+</script>
 <%
     }
 %>
