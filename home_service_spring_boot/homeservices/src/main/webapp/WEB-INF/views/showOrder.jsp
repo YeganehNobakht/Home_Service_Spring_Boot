@@ -1,16 +1,17 @@
 <%@ page import="java.io.PrintWriter" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="p" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="p" uri="http://www.springframework.org/tags" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>customer craete an order</title>
+    <title>customer service</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <link rel="stylesheet" href="https://cdn.map.ir/web-sdk/1.4.2/css/mapp.min.css">
+    <link rel="stylesheet" href="https://cdn.map.ir/web-sdk/1.4.2/css/fa/style.css">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
@@ -19,7 +20,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link href="<p:url value="/static/css/service.css"/>" rel="stylesheet"/>
-    <link href="<p:url value="/static/image"/>" rel="stylesheet"/>
+<%--    <link href="<p:url value="/static/image"/>" rel="stylesheet"/>--%>
+
+    <style>
+        #app {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
 <body>
 <%
@@ -54,7 +62,7 @@
                         ${sessionScope.myCustomerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Account Info</a></li>
+                        <li><a class="dropdown-item" href="/customer/accountInfo">Account Info</a></li>
                         <li><a class="dropdown-item" href="/customer/changePass">Change Password</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -67,22 +75,17 @@
                     <a class="nav-link " aria-current="page" href="/">Home</a>
                 </li>
 
-                <li class="nav-item d-flex justify-content-end">
-                    <a class="nav-link" href="#">Registration Of Specialists</a>
-                </li>
-
             </ul>
 
 
         </div>
         <a class="navbar-brand" href="/customer/showOrders"><img src="/static/image/order.png"
-                                                                 alt="" width="30" height="25"
-                                                                 class="d-inline-block align-text-top">Orders</a>
+                                                                 alt="" width="30" height="25" class="d-inline-block align-text-top">Orders</a>
     </div>
 </nav>
 <hr>
 <div class="m">
-    <div class="m1">
+    <div class="m1prim">
 
         <div class="d-flex flex-column align-items-center mt-5">
             <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
@@ -97,96 +100,171 @@
         </div>
 
     </div>
-    <div class="m11">
+    <div class="mAddService2">
         <h5 class="d-flex justify-content-center text-info">${message}</h5>
         <h5 class="d-flex justify-content-center text-danger">${error}</h5>
 
-        <form action="/sub/subCategory" method="get" id="serviceForm">
-            <table class="table table-striped table-hover">
-                <tr>
-                    <td><label>Service</label></td>
-                    <td>
-                        <select name="service" onchange="submitForm()">
-                            <option value="NONE" label="${selectedService}">${selectedService}</option>
-                            <c:forEach items="${serviceList}" var="list">
-                            <c:if test="${list.name ne selectedService}">
-                            <option value="${list.name}">${list.name}</option>
-                            </c:if>
+        <h3 class="d-flex justify-content-center text-black">Add service:</h3>
+<%--        <div style="background-color: chartreuse">--%>
+
+            <form action="/sub/subCategory" method="get" id="serviceForm">
+                <table class="table table-striped table-info table-hover">
+                    <tr>
+                        <td><label>Service</label></td>
+                        <td>
+                            <select name="service" onchange="submitForm()">
+                                <option value="" label="${selectedService}">...Select...</option>
+                                <c:forEach items="${serviceList}" var="list">
+                                <c:if test="${list.name ne selectedService}">
+                                <option value="${list.name}">${list.name}</option>
+                                </c:if>
+
+                                </c:forEach>
+                        </td>
+                    </tr>
+
+                    </select>
+                </table>
+            </form>
+            <form:form onsubmit="return validateForm()" name="myForm" method="post" modelAttribute="newOrder" action="/order/add">
+                <table class="table table-striped table-hover">
+                    <tr>
+                        <td><label>Sub-Service</label></td>
+                        <td><form:select path="subCategory">
+                            <form:option value="">...Select...</form:option>
+                            <c:forEach items="${subServiceList}" var="list1">
+                                <option value="${list1}">${list1}</option>
 
                             </c:forEach>
-                    </td>
-                </tr>
+                        </form:select>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td></td>
+                        <td><p class="text-danger">${subCategory}</p></td>
+                    </tr>
+                    <tr>
+                        <td><label>Job Description</label></td>
+                        <td><form:textarea path="jobDescription" rows="3" cols="40" placeHolder="Job Description"/></td>
+                        <p class="text-danger">${jobDescription}</p>
+                    </tr>
+                    <tr>
+                        <td><label>Work Date</label></td>
+                        <td><form:input type="date" placeHolder="Work Date" path="workDate"/></td>
 
-                </select>
-            </table>
-        </form>
-        <form:form method="post" modelAttribute="newOrder" action="/order/add">
-            <table class="table table-striped table-hover">
-                <tr>
-                    <td><label>Sub-Service</label></td>
-                    <td><form:select path="subCategory">
-                        <form:option value="">...Select...</form:option>
-                        <c:forEach items="${subServiceList}" var="list1">
-                            <option value="${list1}">${list1}</option>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><p class="text-danger">${workDate}</p></td>
+                    </tr>
+                    <tr>
 
-                        </c:forEach>
-                    </form:select>
-                    </td>
-                    <form:errors path="subCategory" cssClass="text-danger"/>
-                </tr>
-                <tr>
-                    <td><label>Job Description</label></td>
-                    <td><form:textarea path="jobDescription" rows="3" cols="40" placeHolder="Job Description"/></td>
-                    <form:errors path="jobDescription" cssClass="text-danger"/>
-                </tr>
-                <tr>
-                    <td><label>Work Date</label></td>
-                    <td><form:input type="date" placeHolder="Work Date" path="workDate"/></td>
-                    <form:errors path="workDate" cssClass="text-danger"/>
-                </tr>
-                <tr>
-                    <td><label>City Name</label></td>
-                    <td><form:input path="city" placeHolder="city name"/></td>
-                    <form:errors path="city" cssClass="text-danger"/>
-                </tr>
-                <tr>
-                    <td><label>Street Name</label></td>
-                    <td><form:input path="street" placeHolder="street name"/></td>
-                    <form:errors path="street" cssClass="text-danger"/>
-                </tr>
-                <tr>
-                    <td><label>Alley Name</label></td>
-                    <td><form:input path="alley" placeHolder="alley name"/></td>
-                    <form:errors path="alley" cssClass="text-danger"/>
-                </tr>
-                <tr>
-                <form:hidden path="serviceCategory" value="${selectedService}"/>
-                </tr>
-                <tr>
-                    <td></td>
-                <td><button type="submit" value="Add">Add</button></td>
-                </tr>
-            </table>
-        </form:form>
+                        <form:hidden path="serviceCategory" value="${selectedService}"/>
+                    </tr>
+                    <tr>
+                        <input type="hidden" name="lat" id="lat"/>
+                        <input type="hidden" name="lon" id="lon"/>
+                        <td></td>
+                        <td><button class="btn btn-info" type="submit" value="Add">Add</button></td>
+                    </tr>
+                </table>
+            </form:form>
 
-        <script>
-            function submitForm() {
-                document.getElementById("serviceForm").submit();
-            }
-        </script>
+
     </div>
-
+    <div class="mAddService2 d-flex justify-content-center ">
+        <img src="${pageContext.request.contextPath}/static/image/addNewOrder.png" alt="" style="width: 330px; height: 332px; margin-top: 70px;">
+    </div>
 </div>
-<%
+<div style="width: 1200px;height: 300px">
+<div id="app"></div>
+</div>
+<script>
+    function submitForm() {
+        document.getElementById("serviceForm").submit();
     }
-%>
+</script>
+
+<script type="text/javascript" src="https://cdn.map.ir/web-sdk/1.4.2/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="https://cdn.map.ir/web-sdk/1.4.2/js/mapp.env.js"></script>
+<script type="text/javascript" src="https://cdn.map.ir/web-sdk/1.4.2/js/mapp.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
         crossorigin="anonymous"></script>
 
+
+<script>
+    function validateForm() {
+        let x = document.forms["myForm"]["lat"].value;
+        if (x == "") {
+            alert("Show your location on the map.");
+            return false;
+        }
+    }
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        var app = new Mapp({
+            element: '#app',
+            presets: {
+                latlng: {
+                    lat: 35.73249,
+                    lng: 51.42268,
+                },
+                zoom: 10
+            },
+            apiKey: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImFkZDliYTFjY2RmMmQ1OWNmOWZiMGRmYjAwNTI5ZDQ3NjcyNzNmZTkyNDA0OWIxZDY2NTUwYTIxNDg0MDQyMWUxYzJkZGY1YTJkYzM5ZGVkIn0.eyJhdWQiOiIxNDYzNCIsImp0aSI6ImFkZDliYTFjY2RmMmQ1OWNmOWZiMGRmYjAwNTI5ZDQ3NjcyNzNmZTkyNDA0OWIxZDY2NTUwYTIxNDg0MDQyMWUxYzJkZGY1YTJkYzM5ZGVkIiwiaWF0IjoxNjI0Nzk4NjAyLCJuYmYiOjE2MjQ3OTg2MDIsImV4cCI6MTYyNzM5MDYwMiwic3ViIjoiIiwic2NvcGVzIjpbImJhc2ljIl19.dEuGOHxMMbShejTdwOmpY6QEAIPchgg7myXUk8m39Oa25GXMF5oaTQf5cE9YX9C-IHEjezF3lsZa-xwG7p9Y2vm9k3eCCAcomSn3FePPoq8abiLMjM3bxas_jw2I2mmsiktEw_jflD5lwF4LU7UCgQsHcA0xW7Vtoef5xzd44NES0GXWUYR4FvSCsd9Ryq2wNy2iAmC0bYs_nTG6tW9Eb3OYSXI_EmOZdY6ZFkjFCAYa3RQ8rGM-SuMQHj1zCNliLLQYYobReVZMRe70RkppSrc2dfES_RrOgr8ZnWvkMoMyinLzcZUM4zVpNGYSWw5XhdqRc0Z02-G5c7cbtjjsOA'
+        });
+        app.addLayers();
+        app.map.on('click', function (e) {
+            document.getElementById('lat').value=e.latlng.lat;
+            document.getElementById('lon').value=e.latlng.lng;
+            console.log(document.getElementById('lat'))
+            var marker = app.addMarker({
+                name: 'advanced-marker',
+                latlng: {
+                    lat: e.latlng.lat,
+                    lng: e.latlng.lng,
+                },
+                icon: app.icons.red,
+                popup: {
+                    title: {
+                        i18n: 'marker-title',
+                    },
+                    description: {
+                        i18n: 'marker-description',
+                    },
+                    class: 'marker-class',
+                    open: true,
+                },
+                pan: false,
+                draggable: true,
+                history: false,
+                on: {
+                    click: function () {
+                        console.log('Click callback');
+                    },
+                    contextmenu: function () {
+                        console.log('Contextmenu callback');
+                    },
+                },
+            });
+            app.showReverseGeocode({
+                state: {
+                    latlng: {
+                        lat: e.latlng.lat,
+                        lng: e.latlng.lng,
+                    },
+                    zoom: 16,
+                },
+            });
+        })
+    });
+</script>
+<%
+    }
+%>
 </body>
 </html>
-
-
-
-
