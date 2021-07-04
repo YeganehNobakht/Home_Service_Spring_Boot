@@ -4,11 +4,13 @@ import ir.maktab.homeservices.data.entity.ServiceCategory;
 import ir.maktab.homeservices.data.entity.User;
 import ir.maktab.homeservices.data.entity.enums.UserStatus;
 import ir.maktab.homeservices.data.repository.User.UserRepository;
+import ir.maktab.homeservices.data.repository.specification.Specifications;
 import ir.maktab.homeservices.dto.UserDto;
 import ir.maktab.homeservices.dto.UserFilter;
 import ir.maktab.homeservices.dto.enums.UserRole;
 import ir.maktab.homeservices.exceptions.checkes.PasswordNotFoundException;
 import ir.maktab.homeservices.exceptions.checkes.ServiceNotFoundException;
+import ir.maktab.homeservices.exceptions.checkes.UserNotFoundException;
 import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
 import ir.maktab.homeservices.service.mapper.UserMapper;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -22,7 +24,9 @@ import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -88,20 +92,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> filterUser(UserFilter user, ServiceCategory service) throws ServiceNotFoundException {
-        List<UserDto> userDtoList = new ArrayList<>();
-        userDtoList.addAll(
-                userRepository.findAll(UserRepository.filterUsers(user, service))
-                        .stream().map(userMapper::toUserDto).collect(Collectors.toList())
-        );
-
-        return userDtoList;
+        List<User> all = userRepository.findAll(Specifications.filterUsers(user, service));
+        all.removeIf(u -> u.getUserRole().equals(UserRole.Manager));
+        return new ArrayList<>(all.stream().map(userMapper::toUserDto).collect(Collectors.toList()));
     }
 
     @Override
     public List<UserDto> findAll() {
         List<User> all = userRepository.findAll();
-        List<User> userList = all.stream().filter(u->u.getUserRole().equals(UserRole.Manager)).collect(Collectors.toList());
-        return userList.stream().map(userMapper::toUserDto).collect(Collectors.toList());
+        all.removeIf(user -> user.getUserRole().equals(UserRole.Manager));
+
+        return all.stream().map(userMapper::toUserDto).collect(Collectors.toList());
     }
 
     @Transactional
@@ -109,9 +110,21 @@ public class UserServiceImpl implements UserService {
     public void checkForChangePassword(UserDto userDto, String oldPass, String newPass) throws PasswordNotFoundException {
         String encodeOldPass = passwordEncoder.encode(oldPass);
         String encodeNewPass = passwordEncoder.encode(newPass);
+        boolean matches = passwordEncoder.matches(oldPass, userDto.getPassword());
+        if (matches)
+            userRepository.updatePassword(userDto.getId(), encodeNewPass);
+        else
+            throw new PasswordNotFoundException(maktabMessageSource.getEnglish("password.not.found"));
 
-        if (encodeOldPass.equals(userDto.getPassword()))
-            userRepository.updatePassword(userDto.getId(),encodeNewPass);
-        throw new PasswordNotFoundException(maktabMessageSource.getEnglish("password.not.found"));
+    }
+
+    @Transactional
+    @Override
+    public void confirmeUser(Integer id) throws UserNotFoundException {
+        Optional<User> byId = userRepository.findById(id);
+        if (byId.isPresent())
+            userRepository.updateUserStatus(id, UserStatus.APPROVE);
+        else
+            throw new UserNotFoundException(maktabMessageSource.getEnglish("user.not.found", new Object[]{id}));
     }
 }

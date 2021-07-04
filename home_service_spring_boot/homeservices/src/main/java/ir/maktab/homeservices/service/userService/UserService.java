@@ -5,6 +5,7 @@ import ir.maktab.homeservices.dto.UserDto;
 import ir.maktab.homeservices.dto.UserFilter;
 import ir.maktab.homeservices.exceptions.checkes.PasswordNotFoundException;
 import ir.maktab.homeservices.exceptions.checkes.ServiceNotFoundException;
+import ir.maktab.homeservices.exceptions.checkes.UserNotFoundException;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
@@ -22,4 +23,6 @@ public interface UserService {
     List<UserDto> findAll();
 
     void checkForChangePassword(UserDto userDto, String oldPass, String newPass) throws PasswordNotFoundException;
+
+    void confirmeUser(Integer id) throws UserNotFoundException;
 }
