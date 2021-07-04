@@ -26,14 +26,9 @@ public class ServiceController {
     @PostMapping("/add")
     public String add(@ModelAttribute("subServiceDto") ServiceCategoryDto serviceCategoryDto, Model model) throws Exception {
         logger.info("...add service to service list...");
-        ServiceCategoryDto service = serviceCategoryService.getByName(serviceCategoryDto.getName());
-        if (service!=null) {
-            serviceCategoryService.sava(serviceCategoryDto);
-            model.addAttribute("success", maktabMessageSource.getEnglish("service.add"));
-        }
-        else
-            logger.warn("...Service already exist...");
-            model.addAttribute("success", maktabMessageSource.getEnglish("service.exist"));
-        return "managerSuccessPage";
+        serviceCategoryService.addServiceCategory(serviceCategoryDto);
+        model.addAttribute("message", maktabMessageSource.getEnglish("service.added", new Object[]{serviceCategoryDto.getName()}));
+        model.addAttribute("serviceDto", new ServiceCategoryDto());
+        return "managerAddService";
     }
 }
