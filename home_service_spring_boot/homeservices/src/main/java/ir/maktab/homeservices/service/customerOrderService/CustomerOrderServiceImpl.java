@@ -45,7 +45,7 @@ public class CustomerOrderServiceImpl implements CustomerOrderService {
         AddressDto addressDto = new AddressDto().setAlley(orderDto.getAlley())
                 .setCity(orderDto.getCity()).setStreet(orderDto.getStreet());
 
-//        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(orderDto.getWorkDate());
+
         customerOrderDto.setServiceCategory(serviceByName)
                 .setSubCategory(subServiceByName)
                 .setJobDescription(orderDto.getJobDescription())
@@ -62,7 +62,7 @@ public class CustomerOrderServiceImpl implements CustomerOrderService {
     public List<CustomerOrderDto> findByService(ServiceCategoryDto serviceCategoryDto) throws ServiceNotFoundException {
         ServiceCategoryDto service = categoryService.getByName(serviceCategoryDto.getName());
         List<CustomerOrder> customerOrder = customerOrderRepository
-                .findByServiceCategoryAndWorkDateGreaterThanEqual(mapper.toServiceCategory(service),new Date());
+                .findByServiceCategoryAndWorkDateGreaterThanEqual(mapper.toServiceCategory(service), new Date());
         return customerOrder.stream().map(mapper::toCustomerOrderDto).collect(Collectors.toList());
     }
 
@@ -71,7 +71,7 @@ public class CustomerOrderServiceImpl implements CustomerOrderService {
         Optional<CustomerOrder> order = customerOrderRepository.findById(orderId);
         if (order.isPresent())
             return mapper.toCustomerOrderDto(order.get());
-        throw new OrderNotFoundException(maktabMessageSource.getEnglish("order.not.found",new Object[]{orderId}));
+        throw new OrderNotFoundException(maktabMessageSource.getEnglish("order.not.found", new Object[]{orderId}));
     }
 
     @Override
@@ -80,6 +80,7 @@ public class CustomerOrderServiceImpl implements CustomerOrderService {
 
         return customerOrders.stream().map(mapper::toCustomerOrderDto).collect(Collectors.toList());
     }
+
     @Override
     public List<CustomerOrderDto> findByCustomerAndOrderStatusNotPaid(CustomerDto customerDto) {
         List<CustomerOrder> customerOrders = customerOrderRepository.findByCustomerAndOrderStatusNot(mapper.toCustomer(customerDto), OrderStatus.PAID);
@@ -98,31 +99,39 @@ public class CustomerOrderServiceImpl implements CustomerOrderService {
     public void updateOrderStatus(CustomerOrderDto orderDto) throws OrderNotFoundException {
         if (customerOrderRepository.findById(orderDto.getId()).isPresent()) {
             //using save method for update
-            customerOrderRepository.updateOrderStatus(orderDto.getId(),orderDto.getOrderStatus());
+            customerOrderRepository.updateOrderStatus(orderDto.getId(), orderDto.getOrderStatus());
         } else
-            throw new OrderNotFoundException(maktabMessageSource.getEnglish("order.not.found",new Object[]{orderDto.getId()}));
+            throw new OrderNotFoundException(maktabMessageSource.getEnglish("order.not.found", new Object[]{orderDto.getId()}));
     }
+
     @Transactional
     @Override
     public void updateOrderStatusAndPriceAndSpecialist(CustomerOrderDto orderDto) throws OrderNotFoundException {
         if (customerOrderRepository.findById(orderDto.getId()).isPresent()) {
-            customerOrderRepository.updateOrderStatusAndPriceAndSpecialist(orderDto.getId(),orderDto.getOrderStatus(),orderDto.getPrice(),mapper.toSpecialist(orderDto.getSpecialistDto()));
+            customerOrderRepository.updateOrderStatusAndPriceAndSpecialist(orderDto.getId(), orderDto.getOrderStatus(), orderDto.getPrice(), mapper.toSpecialist(orderDto.getSpecialistDto()));
         } else
-            throw new OrderNotFoundException(maktabMessageSource.getEnglish("order.not.found",new Object[]{orderDto.getId()}));
+            throw new OrderNotFoundException(maktabMessageSource.getEnglish("order.not.found", new Object[]{orderDto.getId()}));
     }
 
     @Override
     public List<CustomerOrderDto> findUserByStatusAndCustomer(OrderStatus orderStatus, CustomerDto customerDto) throws OrderNotFoundException {
         List<CustomerOrder> customerOrder = customerOrderRepository.findUserByStatusAndCustomer(orderStatus, customerDto.getId());
-        if (customerOrder.size()!=0){
+        if (customerOrder.size() != 0) {
             return customerOrder.stream().map(mapper::toCustomerOrderDto).collect(Collectors.toList());
         }
-        throw new OrderNotFoundException((maktabMessageSource.getEnglish("order.not.found2",new Object[]{orderStatus,customerDto.getUsername()})));
+        throw new OrderNotFoundException((maktabMessageSource.getEnglish("order.not.found2", new Object[]{orderStatus, customerDto.getUsername()})));
     }
+
     @Transactional
     @Override
     public void updateComment(Integer orderId, CustomerCommentDto customerCommentDto) {
-        customerOrderRepository.updateComment(orderId,mapper.toCustomerComment(customerCommentDto));
+        customerOrderRepository.updateComment(orderId, mapper.toCustomerComment(customerCommentDto));
+    }
+
+    @Override
+    public List<CustomerOrderDto> findByServiceAndStatus(ServiceCategoryDto s, OrderStatus orderStatus) {
+        List<CustomerOrder> order = customerOrderRepository.findByServiceCategoryAndOrderStatusAndWorkDateGreaterThanEqual(mapper.toServiceCategory(s), orderStatus, new Date());
+        return order.stream().map(mapper::toCustomerOrderDto).collect(Collectors.toList());
     }
 
 
