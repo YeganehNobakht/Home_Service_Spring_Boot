@@ -5,6 +5,7 @@ import ir.maktab.homeservices.dto.*;
 import ir.maktab.homeservices.exceptions.checkes.ManagerNotFoundException;
 import ir.maktab.homeservices.exceptions.checkes.ServiceNotFoundException;
 import ir.maktab.homeservices.exceptions.checkes.SpecialistNotFoundException;
+import ir.maktab.homeservices.exceptions.checkes.UserNotFoundException;
 
 import java.util.List;
 
@@ -32,4 +33,6 @@ public interface ManagerService {
     List<UserDto> filterUser(UserFilter user) throws ServiceNotFoundException;
 
     ManagerDto findByUsername(String username) throws ManagerNotFoundException;
+
+    void confirmUser(Integer id) throws UserNotFoundException;
 }
