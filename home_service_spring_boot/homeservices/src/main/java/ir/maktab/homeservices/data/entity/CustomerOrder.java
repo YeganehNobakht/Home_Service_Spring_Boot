@@ -26,9 +26,10 @@ public class CustomerOrder {
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date orderDate;
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date workDate;
     private Address address;
+    //    private AddressFromMap addressFromMap;
     private double price;
     @ManyToOne
     @JoinColumn(name = "customerColumn", nullable = false, foreignKey = @ForeignKey(name = "customer_order_fk"))
@@ -36,7 +37,7 @@ public class CustomerOrder {
     @OneToMany(orphanRemoval = true, cascade = CascadeType.PERSIST, mappedBy = "customerOrder")
     private List<Suggestion> suggestionList = new ArrayList<>();
     @ManyToOne
-    @JoinColumn(name = "specialistColumn", nullable = true,insertable = true,updatable = true, foreignKey = @ForeignKey(name = "specialist_order_fk"))
+    @JoinColumn(name = "specialistColumn", nullable = true, insertable = true, updatable = true, foreignKey = @ForeignKey(name = "specialist_order_fk"))
     private Specialist specialist;
     @OneToOne
     @JoinColumn(name = "cumment_id")
@@ -95,6 +96,15 @@ public class CustomerOrder {
         this.address = address;
         return this;
     }
+
+//    public AddressFromMap getAddressFromMap() {
+//        return addressFromMap;
+//    }
+//
+//    public CustomerOrder setAddressFromMap(AddressFromMap addressFromMap) {
+//        this.addressFromMap = addressFromMap;
+//        return this;
+//    }
 
     public Customer getCustomer() {
         return customer;

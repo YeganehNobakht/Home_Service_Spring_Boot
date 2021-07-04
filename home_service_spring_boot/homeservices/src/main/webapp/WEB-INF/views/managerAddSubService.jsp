@@ -51,10 +51,10 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle active" href="" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        ${sessionScope.myCustomerDto.username}
+                        ${sessionScope.myManagerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/mngr/changePass">Change Password</a></li>
+<%--                        <li><a class="dropdown-item" href="/mngr/changePass">Change Password</a></li>--%>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -85,48 +85,63 @@
             <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
                     onclick="parent.location='/mngr/subService'">Add Sub-Service
             </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/Speciality'">Add Speciality
+            </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/reportOfUsers'">Users Activities
+            </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/reportOfOrders'">Orders
+            </button>
         </div>
-
     </div>
-    <div class="m11">
+
+
+    <div class="mAddService1">
         <h5 class="d-flex justify-content-center text-info">${message}</h5>
         <h5 class="d-flex justify-content-center text-danger">${error}</h5>
 
-        <h3 class="d-flex justify-content-center text-black">Add sub-service to a service:</h3>
-        <form:form modelAttribute="subServiceDto" id="loginForm"  action="/sub/add" method="post"><br><br>
-            <table class="table table-striped table-hover">
-                <tr>
-                <td><form:label path="serviceCategory.name">Service:</form:label></td>
-                    <%--                <td><form:radiobuttons path="serviceCategoryList" items="${sessionScope.allServices}"/></td>--%>
-                    <td><form:select path="serviceCategory.name" style="width: 202px" size="1" name="serviceCategoryList">
-                    <form:option value="NONE" >...SELECT...</form:option>
-                    <c:forEach items="${serviceList}" var="list">
-                    <option value="${list.name}">${list.name}</option>
-                    </c:forEach>
-                    </form:select>
-                </td>
-                </tr>
-                <tr>
-                    <td><form:label path="name" for="name">Sub-Service Name: </form:label></td>
-                    <td><form:input  path="name" id="name"/></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><p class="text-danger">${name}</p></td>
-                </tr>
-                <tr>
-                    <td><form:label path="price" for="price">Sub-Service Base Price: </form:label></td>
-                    <td><form:input path="price" id="price"/></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><form:button id="add" name="add">Add</form:button></td>
-                </tr>
-            </table>
-        </form:form>
+        <h3 class="d-flex justify-content-center text-black">Add Sub-service:</h3>
+        <div style="background-color: chartreuse">
+            <form:form modelAttribute="subServiceDto" id="loginForm"  action="/sub/add" method="post"><br><br>
+                <table class="table table-striped table-hover">
+                    <tr>
+                        <td><form:label path="serviceCategory.name">Service:</form:label></td>
+                            <%--                <td><form:radiobuttons path="serviceCategoryList" items="${sessionScope.allServices}"/></td>--%>
+                        <td><form:select path="serviceCategory.name" style="width: 202px" size="1" name="serviceCategoryList">
+                            <form:option value="" >...SELECT...</form:option>
+                            <c:forEach items="${serviceList}" var="list">
+                                <option value="${list.name}">${list.name}</option>
+                            </c:forEach>
+                        </form:select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><form:label path="name" for="name">Sub-Service Name: </form:label></td>
+                        <td><form:input  path="name" id="name"/></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><p class="text-danger">${name}</p></td>
+                    </tr>
+                    <tr>
+                        <td><form:label path="price" for="price">Sub-Service Base Price: </form:label></td>
+                        <td><form:input path="price" id="price"/></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><form:button id="add" name="add">Add</form:button></td>
+                    </tr>
+                </table>
+            </form:form>
+        </div>
+    </div>
+    <div class="mAddService1 ">
+        <img src="${pageContext.request.contextPath}/static/image/subService.png" alt="">
     </div>
 
-</div>
+
 <%
     }
 %>

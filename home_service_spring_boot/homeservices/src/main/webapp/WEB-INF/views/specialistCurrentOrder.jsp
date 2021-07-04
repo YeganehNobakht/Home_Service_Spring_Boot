@@ -53,7 +53,7 @@
                         ${sessionScope.mySpecialistDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Account Info</a></li>
+<%--                        <li><a class="dropdown-item" href="#">Account Info</a></li>--%>
                         <li><a class="dropdown-item" href="/specialist/changePass">Change Password</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -64,10 +64,6 @@
 
                 <li class="nav-item">
                     <a class="nav-link " aria-current="page" href="/">Home</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="<c:url value="/customer/login"/>">Registration Of Customer</a>
                 </li>
 
             </ul>
@@ -108,8 +104,8 @@
                         <td>Service</td>
                         <td>Sub Service</td>
                         <td>Work Date</td>
-                        <td>Order Status</td>
                         <td>Order Price</td>
+                        <td>Order Status</td>
                         <td>Selection</td>
                     </tr>
                     <c:forEach items="${orders}" var="o">
@@ -118,9 +114,9 @@
                             <td>${o.serviceCategory.name}</td>
                             <td>${o.subCategory.name}</td>
                             <td>${o.workDate}</td>
-                            <td>${o.orderStatus}</td>
                             <td>${o.price}</td>
-                            <td><a name="Select" onclick="choose(${o.id})"><button type="button">Select</button></a></td>
+                            <td>${o.orderStatus}</td>
+                            <td><a name="Select" onclick="choose(${o.id})"><button class="btn btn-info" type="button">Next status</button></a></td>
                         </tr>
                     </c:forEach>
                 </table>
@@ -137,7 +133,7 @@
         function choose(id) {
             console.log("in")
             //requestParam-> window.location.href = "http://localhost:8080/suggestion/getSuggestion/?orderId="+id
-            window.location.href = "http://localhost:8080/specialist/changeStatus/"+id
+            window.location.href = "${pageContext.request.contextPath}/specialist/changeStatus/"+id
 
         }
     </script>

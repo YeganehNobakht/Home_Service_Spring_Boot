@@ -53,7 +53,7 @@
                         ${sessionScope.mySpecialistDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Account Info</a></li>
+<%--                        <li><a class="dropdown-item" href="#">Account Info</a></li>--%>
                         <li><a class="dropdown-item" href="/specialist/changePass">Change Password</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -64,10 +64,6 @@
 
                 <li class="nav-item">
                     <a class="nav-link " aria-current="page" href="/">Home</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="<c:url value="/customer/login"/>">Registration Of Customer</a>
                 </li>
 
             </ul>
@@ -100,8 +96,11 @@
     </div>
     <div class="m11">
         <div class="d-flex justify-content-center">
-            <h1>${success}</h1>
+            <h4>${success}</h4>
             <h4>${money}</h4>
+        </div>
+        <div class="d-flex justify-content-center">
+            <img src="/static/image/approval.png" alt="" style="width: 550px;height: 250px; margin-top: 20px">
         </div>
     </div>
 

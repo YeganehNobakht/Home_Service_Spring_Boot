@@ -13,7 +13,7 @@ public interface CustomerService {
 
     void update(CustomerDto customerDto) throws CustomerNotFoundException;
 
-    Customer changePassword(String username, String oldPass, String newPass) throws CustomerNotFoundException, PasswordNotFoundException;
+    void changePassword(CustomerDto customerDto, String oldPass, String newPass) throws CustomerNotFoundException, PasswordNotFoundException;
 
     CustomerDto registerCustomer(CustomerDto customerDto, String siteURL) throws UnsupportedEncodingException, MessagingException, DuplicateEmailException, DuplicateUsernameException;
 

@@ -4,6 +4,7 @@ package ir.maktab.homeservices.web;
 import ir.maktab.homeservices.dto.OrderDto;
 import ir.maktab.homeservices.dto.ServiceCategoryDto;
 import ir.maktab.homeservices.dto.SubCategoryDto;
+import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
 import ir.maktab.homeservices.service.serviceCategory.ServiceCategoryService;
 import ir.maktab.homeservices.service.subCategoryService.SubCategoryService;
 import org.apache.logging.log4j.LogManager;
@@ -23,10 +24,12 @@ public class SubCategoryController {
     private final Logger logger = LogManager.getLogger(SubCategoryController.class);
     private final SubCategoryService subCategoryService;
     private final ServiceCategoryService serviceCategoryService;
+    private final MaktabMessageSource maktabMessageSource;
 
-    public SubCategoryController(SubCategoryService subCategoryService, ServiceCategoryService serviceCategoryService) {
+    public SubCategoryController(SubCategoryService subCategoryService, ServiceCategoryService serviceCategoryService, MaktabMessageSource maktabMessageSource) {
         this.subCategoryService = subCategoryService;
         this.serviceCategoryService = serviceCategoryService;
+        this.maktabMessageSource = maktabMessageSource;
     }
 
     @GetMapping("/subCategory")
@@ -43,12 +46,14 @@ public class SubCategoryController {
     }
 
     @PostMapping("/add")
-    public String add(@ModelAttribute("subServiceDto") SubCategoryDto subCategoryDto, Model model) throws Exception {
+    public String add(@ModelAttribute("subServiceDto") SubCategoryDto subCategoryDto,
+                      @SessionAttribute("serviceList") List<ServiceCategoryDto> serviceList, Model model) throws Exception {
         logger.info("...adding a new sub-service to a service...");
         ServiceCategoryDto service = serviceCategoryService.getByName(subCategoryDto.getServiceCategory().getName());
         subCategoryDto.setServiceCategory(service);
         subCategoryService.sava(subCategoryDto);
-        model.addAttribute("success","Sub-service successfully added.");
-        return "managerSuccessPage";
+        model.addAttribute("serviceList", serviceList);
+        model.addAttribute("message", maktabMessageSource.getEnglish("subService.add"));
+        return "managerAddSubService";
     }
 }

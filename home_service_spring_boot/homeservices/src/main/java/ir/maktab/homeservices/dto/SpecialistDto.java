@@ -11,7 +11,7 @@ import java.util.List;
 
 public class SpecialistDto extends UserDto {
     @Size(min = 5, max = 40, message = "rate.size")
-    private double rate;
+    private Double rate;
     @NotNull(message = "image")
     private byte[] profilePicture;
     private Integer commentCounter = 0;
@@ -72,11 +72,11 @@ public class SpecialistDto extends UserDto {
         return this;
     }
 
-    public double getRate() {
+    public Double getRate() {
         return rate;
     }
 
-    public SpecialistDto setRate(double rate) {
+    public SpecialistDto setRate(Double rate) {
         this.rate = rate;
         return this;
     }

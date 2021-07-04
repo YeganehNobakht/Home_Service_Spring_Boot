@@ -1,6 +1,5 @@
 package ir.maktab.homeservices.service.mapper;
 
-import ir.maktab.homeservices.data.entity.Suggestion;
 import ir.maktab.homeservices.data.entity.*;
 import ir.maktab.homeservices.dto.*;
 import org.springframework.stereotype.Component;
@@ -16,6 +15,9 @@ public class Mapper {
     }
 
     public Customer toCustomer(CustomerDto customerDto) {
+        if (customerDto.getBalance() == null) {
+            customerDto.setBalance(0D);
+        }
         return new Customer()
                 .setBalance(customerDto.getBalance())
                 .setDate(customerDto.getDate())
@@ -26,7 +28,7 @@ public class Mapper {
                 .setUsername(customerDto.getUsername())
                 .setUserStatus(customerDto.getUserStatus())
                 .setCustomerOrderList(customerDto.getCustomerOrderList().stream().map(this::toCustomerOrder).collect(Collectors.toList()))
-              //  .setCustomerCommentList(customerDto.getCustomerCommentList().stream().map(this::toCustomerComment).collect(Collectors.toList()))
+                //  .setCustomerCommentList(customerDto.getCustomerCommentList().stream().map(this::toCustomerComment).collect(Collectors.toList()))
                 .setId(customerDto.getId())
                 .setVerificationCode(customerDto.getVerificationCode())
                 .setEnabled(customerDto.isEnabled());
@@ -61,10 +63,11 @@ public class Mapper {
                 .setId(customerOrderDto.getId())
                 .setJobDescription(customerOrderDto.getJobDescription())
                 .setWorkDate(customerOrderDto.getWorkDate())
-                .setPrice(customerOrderDto.getPrice());
-        if (customerOrderDto.getSpecialistDto()!=null)
+                .setPrice(customerOrderDto.getPrice())
+                /* .setAddressFromMap(addressFromMapMapper.toAddressfromMap(customerOrderDto.getAddressFromMapDto()))*/;
+        if (customerOrderDto.getSpecialistDto() != null)
             customerOrder.setSpecialist(toSpecialist(customerOrderDto.getSpecialistDto()));
-        if (customerOrderDto.getCustomerCommentDto()!=null)
+        if (customerOrderDto.getCustomerCommentDto() != null)
             customerOrder.setCustomerComment(toCustomerComment(customerOrderDto.getCustomerCommentDto()));
         return customerOrder;
     }
@@ -80,10 +83,11 @@ public class Mapper {
                 .setId(customerOrder.getId())
                 .setJobDescription(customerOrder.getJobDescription())
                 .setWorkDate(customerOrder.getWorkDate())
-                .setPrice(customerOrder.getPrice());
-        if (customerOrder.getSpecialist()!=null)
-             customerOrderDto.setSpecialistDto(toSpecialistDto(customerOrder.getSpecialist()));
-        if (customerOrder.getCustomerComment()!=null)
+                .setPrice(customerOrder.getPrice())
+                /*.setAddressFromMapDto(addressFromMapMapper.toAddressfromMapDto(customerOrder.getAddressFromMap()))*/;
+        if (customerOrder.getSpecialist() != null)
+            customerOrderDto.setSpecialistDto(toSpecialistDto(customerOrder.getSpecialist()));
+        if (customerOrder.getCustomerComment() != null)
             customerOrderDto.setCustomerCommentDto(toCustomerCommentDto(customerOrder.getCustomerComment()));
         return customerOrderDto;
     }
@@ -93,7 +97,7 @@ public class Mapper {
                 .setId(subCategory.getId())
                 .setName(subCategory.getName())
                 .setPrice(subCategory.getPrice())
-               // .setCustomerOrderList(subCategory.getCustomerOrderList().stream().map(this::toCustomerOrderDto).collect(Collectors.toList()))
+                // .setCustomerOrderList(subCategory.getCustomerOrderList().stream().map(this::toCustomerOrderDto).collect(Collectors.toList()))
                 .setServiceCategory(toServiceCategoryDto(subCategory.getServiceCategory()));
     }
 
@@ -129,7 +133,7 @@ public class Mapper {
                 .setComment(customerCommentDto.getComment())
                 .setCustomer(toCustomer(customerCommentDto.getCustomerDto()))
                 .setId(customerCommentDto.getId())
-                .setScore(Double.parseDouble(customerCommentDto.getScore()))
+                .setScore(customerCommentDto.getScore())
                 .setSpecialist(toSpecialist(customerCommentDto.getSpecialistDto()));
     }
 
@@ -138,16 +142,21 @@ public class Mapper {
                 .setComment(customerComment.getComment())
                 .setCustomerDto(toCustomerDto(customerComment.getCustomer()))
                 .setId(customerComment.getId())
-                .setScore(customerComment.getScore().toString())
+                .setScore(customerComment.getScore())
                 .setSpecialistDto(toSpecialistDto((customerComment.getSpecialist())));
     }
 
     public Specialist toSpecialist(SpecialistDto specialistDto) {
+        if (specialistDto.getBalance() == null) {
+            specialistDto.setBalance(0D);
+        }
+        if (specialistDto.getRate() == null) {
+            specialistDto.setRate(0D);
+        }
         return new Specialist().setProfilePicture(specialistDto.getProfilePicture())
                 .setCommentCounter(specialistDto.getCommentCounter())
                 .setRate(specialistDto.getRate())
                 .setId(specialistDto.getId())
-                .setBalance(specialistDto.getBalance())
                 .setDate(specialistDto.getDate())
                 .setEmail(specialistDto.getEmail())
                 .setName(specialistDto.getName())
@@ -164,6 +173,7 @@ public class Mapper {
     }
 
     public SpecialistDto toSpecialistDto(Specialist specialist) {
+
         return new SpecialistDto().setProfilePicture(specialist.getProfilePicture())
                 .setCommentCounter(specialist.getCommentCounter())
                 .setId(specialist.getId())

@@ -48,7 +48,7 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button"
+                    <a class="nav-link dropdown-toggle active" href="/customer/accountInfo" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
                         ${sessionScope.myCustomerDto.username}
                     </a>
@@ -66,9 +66,6 @@
                     <a class="nav-link " aria-current="page" href="/">Home</a>
                 </li>
 
-                <li class="nav-item d-flex justify-content-end">
-                    <a class="nav-link" href="#">Registration Of Specialists</a>
-                </li>
 
             </ul>
 
@@ -95,29 +92,33 @@
         </div>
 
     </div>
-    <div class="m11">
+    <div class="mAddService1">
+        <h5 class="d-flex justify-content-center text-info">${message}</h5>
         <h5 class="d-flex justify-content-center text-danger">${error}</h5>
-        <form:form modelAttribute="customerDto" width="700px" action="/customer/increaseBalance" method="post">
-            <table class="table table-striped table-hover d-flex justify-content-center">
-                <tr>
-                    <td><form:label path="balance">Amount</form:label></td>
-                </tr>
-                <tr>
-                    <td><form:input path="balance" /></td>
-                </tr>
-                <tr>
-                    <td><p class="text-danger">${balance}</p></td>
-                </tr>
-                <tr>
-                    <td>
-                        <form:button id="pay" name="pay">Pay</form:button>
-                    </td>
-                </tr>
-            </table>
 
-        </form:form>
+        <h3 class="d-flex justify-content-center text-black">How much do you want to increase?</h3>
+        <div style="background-color: chartreuse">
+            <form:form modelAttribute="customerDto" width="700px" action="/customer/increaseBalance" method="post">
+                <table class="table d-flex justify-content-center">
+                    <tr>
+                        <td><form:input path="Balance" /></td>
+                    </tr>
+                    <tr>
+                        <td><p class="text-danger">${Balance}</p></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <form:button class="btn btn-info" id="pay" name="pay">Pay</form:button>
+                        </td>
+                    </tr>
+                </table>
+
+            </form:form>
+        </div>
     </div>
-
+    <div class="mAddService1 ">
+        <img src="${pageContext.request.contextPath}/static/image/increaseBalance.jpg" alt="" style="height: 300px;width: 350px; margin-top: 20px;">
+    </div>
 </div>
 <%
     }

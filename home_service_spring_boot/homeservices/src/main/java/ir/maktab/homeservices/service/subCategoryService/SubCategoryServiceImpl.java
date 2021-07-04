@@ -37,7 +37,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
         if (subCategory.isPresent())
             return subCategory.get();
         else
-            throw new SubServiceNotFoundException(maktabMessageSource.getEnglish("sub.service.not.found",new Object[]{id}));
+            throw new SubServiceNotFoundException(maktabMessageSource.getEnglish("sub.service.not.found", new Object[]{id}));
     }
 
     @Override
@@ -47,7 +47,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
         if (subCategory != null)
             return mapper.toSubCategoryDto(subCategory);
         else
-            throw new SubServiceNotFoundException(maktabMessageSource.getEnglish("sub.service.not.found",new Object[]{name}));
+            throw new SubServiceNotFoundException(maktabMessageSource.getEnglish("sub.service.not.found", new Object[]{name}));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
         if (subCategory.isPresent()) {
             subCategoryRepository.save(subCategory.get());
         } else
-            throw new SubServiceNotFoundException(maktabMessageSource.getEnglish("sub.service.not.found",new Object[]{subCategoryDto}));
+            throw new SubServiceNotFoundException(maktabMessageSource.getEnglish("sub.service.not.found", new Object[]{subCategoryDto}));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
         if (subCategory.isPresent()) {
             subCategoryRepository.delete(subCategory.get());
         } else
-            throw new SubServiceNotFoundException(maktabMessageSource.getEnglish("sub.service.not.found",new Object[]{subCategoryDto}));
+            throw new SubServiceNotFoundException(maktabMessageSource.getEnglish("sub.service.not.found", new Object[]{subCategoryDto}));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package ir.maktab.homeservices.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import ir.maktab.homeservices.data.entity.enums.OrderStatus;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -11,7 +12,9 @@ public class CustomerOrderDto {
     private ServiceCategoryDto serviceCategory;
     private SubCategoryDto subCategory;
     private String jobDescription;
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date orderDate;
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date workDate;
     private AddressDto addressDto;
@@ -20,6 +23,7 @@ public class CustomerOrderDto {
     private SpecialistDto specialistDto;
     private double price;
     private CustomerCommentDto customerCommentDto;
+    private AddressFromMapDto addressFromMapDto;
 
 
     public Integer getId() {
@@ -136,6 +140,15 @@ public class CustomerOrderDto {
 
     public CustomerOrderDto setCustomerCommentDto(CustomerCommentDto customerCommentDto) {
         this.customerCommentDto = customerCommentDto;
+        return this;
+    }
+
+    public AddressFromMapDto getAddressFromMapDto() {
+        return addressFromMapDto;
+    }
+
+    public CustomerOrderDto setAddressFromMapDto(AddressFromMapDto addressFromMapDto) {
+        this.addressFromMapDto = addressFromMapDto;
         return this;
     }
 }

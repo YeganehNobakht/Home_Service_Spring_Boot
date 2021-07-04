@@ -50,10 +50,10 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle active" href="" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        ${sessionScope.myCustomerDto.username}
+                        ${sessionScope.myManagerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/mngr/changePass">Change Password</a></li>
+<%--                        <li><a class="dropdown-item" href="/mngr/changePass">Change Password</a></li>--%>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -84,6 +84,15 @@
             <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
                     onclick="parent.location='/mngr/subService'">Add Sub-Service
             </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/Speciality'">Add Speciality
+            </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/reportOfUsers'">Users Activities
+            </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/reportOfOrders'">Orders
+            </button>
         </div>
 
     </div>
@@ -91,6 +100,9 @@
         <div class="d-flex justify-content-center">
             <h1>${success}</h1>
             <h4>${money}</h4>
+        </div>
+        <div class="d-flex justify-content-center">
+            <img src="/static/image/approval.png" alt="" style="width: 592px;height: 350px; margin-top: 10px">
         </div>
     </div>
 

@@ -3,9 +3,7 @@ package ir.maktab.homeservices.web;
 import ir.maktab.homeservices.data.entity.enums.OrderStatus;
 import ir.maktab.homeservices.data.entity.enums.SuggestionStatus;
 import ir.maktab.homeservices.dto.*;
-import ir.maktab.homeservices.exceptions.checkes.ServiceAlreadyExistException;
-import ir.maktab.homeservices.exceptions.checkes.ServiceNotFoundException;
-import ir.maktab.homeservices.exceptions.checkes.SpecialistNotFoundException;
+import ir.maktab.homeservices.exceptions.checkes.*;
 import ir.maktab.homeservices.service.customerOrderService.CustomerOrderService;
 import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
 import ir.maktab.homeservices.service.serviceCategory.ServiceCategoryService;
@@ -23,7 +21,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -56,13 +57,18 @@ public class SpecialistController {
     }
 
     @GetMapping("/register")
-    public String register(HttpServletRequest request) throws SpecialistNotFoundException {
+    public String register(HttpServletRequest request, Model model) throws SpecialistNotFoundException, UserNotApproveException {
         logger.info("...specialist registered...");
         HttpSession session = request.getSession(false);
-        SpecialistDto dto = specialistService.findByUsername((String) session.getAttribute("username"));
+        SpecialistDto dto = specialistService.findByUsername((String) session.getAttribute("loginUsername"));
+        boolean approve = specialistService.checkforStatus(dto);
 
-        session.setAttribute("mySpecialistDto", dto);
-        return "specialistService";
+//        if (approve) {
+            session.setAttribute("mySpecialistDto", dto);
+            return "specialistService";
+   /*     } else {
+            return "waitForApprove";
+//        }*/
     }
 
     @GetMapping("/signUp")
@@ -87,17 +93,9 @@ public class SpecialistController {
     @GetMapping("/showOrder")
     public ModelAndView showOrder(@SessionAttribute("mySpecialistDto") SpecialistDto specialistDto) throws ServiceNotFoundException {
         logger.info("...show all unselected order for specialist...");
-        List<ServiceCategoryDto> serviceCategoryDtoList = specialistDto.getServiceCategoryList();
-        Set<CustomerOrderDto> orderDtoList = new HashSet<>();
         Map<String, Object> orderMap = new HashMap<>();
-        for (ServiceCategoryDto s : serviceCategoryDtoList) {
-            List<CustomerOrderDto> order = customerOrderService.findByService(s);
-            for (CustomerOrderDto o : order) {
-                if (suggestionService.findBySpecialist_IdAndOrderId(specialistDto.getId(), o.getId()) == null)
-                    orderDtoList.add(o);
-            }
-        }
-        orderMap.put("order", orderDtoList);
+        Set<CustomerOrderDto> orderDtoLists = suggestionService.showOrderWaitForOffer(specialistDto);
+        orderMap.put("order", orderDtoLists);
         return new ModelAndView("specialistShowOrder", orderMap);
 
     }
@@ -109,17 +107,11 @@ public class SpecialistController {
 
     @PostMapping("/change")
     public ModelAndView change(@ModelAttribute("changePass") ChangePassDto changePassDto,
-                               @SessionAttribute("mySpecialistDto") SpecialistDto specialistDto) throws Exception {
+                               @SessionAttribute("mySpecialistDto") SpecialistDto specialistDto) throws SpecialistNotFoundException, PasswordNotFoundException {
         logger.info("...specialist change password...");
+        specialistService.changePassword(specialistDto, changePassDto.getOldPass(), changePassDto.getNewPass());
         Map<String, String> message = new HashMap<>();
-        if (specialistDto.getPassword().equals(changePassDto.getOldPass())) {
-            specialistDto.setPassword(changePassDto.getNewPass());
-            specialistService.update(specialistDto);
-            message.put("message", maktabMessageSource.getEnglish("pass.change"));
-        } else
-            logger.warn("...old pass does not match...");
-        message.put("message", maktabMessageSource.getEnglish("old.pass.incorrect"));
-
+        message.put("message", maktabMessageSource.getEnglish("pass.change"));
         return new ModelAndView("specialistChangePass", message);
     }
 
@@ -149,27 +141,28 @@ public class SpecialistController {
                             Model model, HttpServletRequest request) throws Exception {
         logger.info("...change status of an order which selected...");
         List<SuggestionDto> suggestionDto = suggestionDtoList.stream().filter(s -> s.getCustomerOrder().getId().equals(orderId)).collect(Collectors.toList());
-        if (suggestionDto.get(0).getCustomerOrder().getOrderStatus().equals(OrderStatus.WAITING_FOR_SPECIALIST_CHOSE)) {
-            customerOrderService.updateOrderStatus(suggestionDto.get(0).getCustomerOrder().setOrderStatus(OrderStatus.WAITING_FOR_SPECIALIST_COME));
-            model.addAttribute("success", maktabMessageSource.getEnglish("order.accept"));
-            return "specialistSuccessPage";
-        }
+        OrderStatus orderStatus = suggestionDto.get(0).getCustomerOrder().getOrderStatus();
+//        if (suggestionDto.get(0).getCustomerOrder().getOrderStatus().equals(OrderStatus.WAITING_FOR_SPECIALIST_CHOSE)) {
+//            customerOrderService.updateOrderStatus(suggestionDto.get(0).getCustomerOrder().setOrderStatus(OrderStatus.WAITING_FOR_SPECIALIST_COME));
+//            model.addAttribute("success", maktabMessageSource.getEnglish("order.accept"));
+//            return "specialistSuccessPage";
+//        }
         if (suggestionDto.get(0).getCustomerOrder().getOrderStatus().equals(OrderStatus.WAITING_FOR_SPECIALIST_COME)) {
             customerOrderService.updateOrderStatus(suggestionDto.get(0).getCustomerOrder().setOrderStatus(OrderStatus.STARTED));
-            model.addAttribute("success", maktabMessageSource.getEnglish("change.status.to.WAITING_FOR_SPECIALIST_COME"));
+            model.addAttribute("success", maktabMessageSource.getEnglish("change.status.to.started"));
             return "specialistSuccessPage";
         }
         if (suggestionDto.get(0).getCustomerOrder().getOrderStatus().equals(OrderStatus.STARTED)) {
             customerOrderService.updateOrderStatus(suggestionDto.get(0).getCustomerOrder().setOrderStatus(OrderStatus.FINISHED_WORK));
-            model.addAttribute("success", maktabMessageSource.getEnglish("change.status.to.started"));
-            return "specialistSuccessPage";
-        }
-        if (suggestionDto.get(0).getCustomerOrder().getOrderStatus().equals(OrderStatus.FINISHED_WORK)) {
-            customerOrderService.updateOrderStatus(suggestionDto.get(0).getCustomerOrder().setOrderStatus(OrderStatus.WAIT_FOR_PAID));
             model.addAttribute("success", maktabMessageSource.getEnglish("change.status.to.finished"));
             return "specialistSuccessPage";
         }
-        if (suggestionDto.get(0).getCustomerOrder().getOrderStatus().equals(OrderStatus.WAIT_FOR_PAID)) {
+        if (suggestionDto.get(0).getCustomerOrder().getOrderStatus().equals(OrderStatus.FINISHED_WORK)) {
+            customerOrderService.updateOrderStatus(suggestionDto.get(0).getCustomerOrder().setOrderStatus(OrderStatus.WAIT_FOR_PAY));
+            model.addAttribute("success", maktabMessageSource.getEnglish("wait.for.pay"));
+            return "specialistSuccessPage";
+        }
+        if (suggestionDto.get(0).getCustomerOrder().getOrderStatus().equals(OrderStatus.WAIT_FOR_PAY)) {
             model.addAttribute("success", maktabMessageSource.getEnglish("wait.for.pay"));
             return "specialistSuccessPage";
         }

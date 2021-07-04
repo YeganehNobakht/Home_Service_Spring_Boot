@@ -45,8 +45,8 @@
 <h5 class="d-flex justify-content-center text-danger">${error}</h5>
 
 <div class="d-flex justify-content-center align-items-center text-black timeBox">
-    <p id="mins" class="text-danger"> </p>
-    <p id="secs" class="text-danger"> </p>
+    <p id="mins" class="text-danger d-flex justify-content-center"> </p>
+    <p id="secs" class="text-danger d-flex justify-content-center"> </p>
 </div>
 <form:form modelAttribute="paymentDto" method="post" action="/payment/complete">
 
@@ -112,7 +112,7 @@
         <tr>
             <td><form:label path="email" >Email</form:label></td>
 
-            <td colspan="2"><form:input path="email" placeHolder="email"/></td>
+            <td colspan="2"><form:input type="email" path="email" placeHolder="email"/></td>
         </tr>
         <tr>
             <td></td>
@@ -161,7 +161,7 @@
 
         // Redirect when countdown is over
         if (timeleft < 0) {
-            window.location.href="http://localhost:8080/payment/timeout"
+            window.location.href="${pageContext.request.contextPath}/payment/timeout"
         }
     }, 1000);
 </script>

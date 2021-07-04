@@ -51,10 +51,10 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle active" href="" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        ${sessionScope.myCustomerDto.username}
+                        ${sessionScope.myManagerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/mngr/changePass">Change Password</a></li>
+<%--                        <li><a class="dropdown-item" href="/mngr/changePass">Change Password</a></li>--%>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -88,12 +88,19 @@
             <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
                     onclick="parent.location='/mngr/Speciality'">Add Speciality
             </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/reportOfUsers'">Users Activities
+            </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/reportOfOrders'">Orders
+            </button>
         </div>
 
     </div>
     <div class="m11">
         <h5 class="d-flex justify-content-center text-info">${message}</h5>
         <h5 class="d-flex justify-content-center text-danger">${error}</h5>
+        <h3 class="d-flex justify-content-center text-black">Click on the icon to add a specialty to the experts.</h3>
 
 
 <form>
@@ -112,7 +119,7 @@
             <td>${o.lastName}</td>
             <td>${o.email}</td>
 
-            <td><a name="Select" onclick="choose(${o.id})"><button type="button">Select</button></a></td>
+            <td><a name="Select" onclick="choose(${o.id})"><button class="btn btn-info" type="button">Select</button></a></td>
         </tr>
     </c:forEach>
     </table>
@@ -127,7 +134,7 @@
 <script>
     function choose(id) {
         console.log("in")
-        window.location.href = "http://localhost:8080/mngr/addSpeciality/" + id
+        window.location.href = "${pageContext.request.contextPath}/mngr/addSpeciality/" + id
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"

@@ -1,10 +1,15 @@
 .he {
-    height: 400px;
+    height: 341px;
 }
 .bgc{
     background-color: #c1efc1;
     margin-right: 250px;
     margin-left: 250px;
+}
+.bgc1{
+    background-color: #c1efc1;
+    margin-right: 200px;
+    margin-left: 200px;
 }
 .timeBox{
     background-color: lightgrey;

@@ -80,15 +80,14 @@
         </div>
         <div class="carousel-inner">
             <div class="carousel-item active he">
-                <img src="https://lh3.googleusercontent.com/proxy/Dx73HvtoDIdHgMPLaa47cqmZl8V9ERpFYfs_QdJgY_kLabYc15Jg_1t8FVtzUrjNKGBZMmvN4bfVR3KQPO82EUOql4OXqfFwA0jz102SYfDMCqoGa6nZlES-EFFwVmlhz7YcSaGGPkyFXlkEiOhLfSdWuHuq-QEeFPDaFSRjOSS-8nSnLldltleLdpbKMOBBRF6iBrU4SIo2eVhBtxrslaPmLoIp3vo0G6nUTz2TfkIRK6hmoDPYU46ILhkoIbhG"
+                <img src="/static/image/cleaning.jpg" style="height: 441px;"
                      class="d-block w-100" alt="...">
                 <div class="carousel-caption d-none d-md-block text-dark">
-                    <h1>Carpet Cleaning</h1>
-                    <h2>Let us wash your carpets to save time and money.</h2>
+
                 </div>
             </div>
             <div class="carousel-item he">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_W2nTYSvOepkEMLHx3NMP2acbwhqzbMCBBQ&usqp=CAU"
+                <img style="height: 441px;" src="/static/image/facilities.jpg"
                      class="d-block w-100" alt="...">
                 <div class="carousel-caption d-none d-md-block text-dark">
                     <h1>Facilities</h1>
@@ -96,13 +95,15 @@
                 </div>
             </div>
             <div class="carousel-item he">
-                <img src="https://ariapak.com/wp-content/uploads/2018/01/home-cleaning.jpeg"
-                     class="d-block w-100" alt="...">
+                <img src="static/image/carpetcleaning.jpg"
+                     class="d-block w-100" alt="..." style="height: 441px;">
                 <div class="carousel-caption d-none d-md-block text-dark">
-                    <h1>Home Cleaning</h1>
-                    <h2>By booking Bama Home Cleaning Services, you can be sure that your home or office cleaning is
-                        done
-                        well.</h2>
+                    <h1>Carpet Cleaning</h1>
+                    <h2>Let us wash your carpets to save time and money.</h2>
+<%--                    <h1>Home Cleaning</h1>--%>
+<%--                    <h2>By booking Bama Home Cleaning Services, you can be sure that your home or office cleaning is--%>
+<%--                        done--%>
+<%--                        well.</h2>--%>
                 </div>
             </div>
         </div>

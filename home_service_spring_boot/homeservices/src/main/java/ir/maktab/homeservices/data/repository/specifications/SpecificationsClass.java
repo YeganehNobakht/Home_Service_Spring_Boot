@@ -15,7 +15,7 @@ public class SpecificationsClass {
         return (root, query, criteriaBuilder) -> {
             CriteriaQuery<ServiceCategory> criteriaQuery = criteriaBuilder.createQuery(ServiceCategory.class);
             List<Predicate> predicates = new ArrayList<>();
-            if (dto.getServiceCategoryList().size()!=0) {
+            if (dto.getServiceCategoryList().size() != 0) {
                 predicates.add(criteriaBuilder.not(root.get("name").in(dto.getServiceCategoryList())));
             }
             return criteriaQuery.where(predicates.toArray(new Predicate[0])).getRestriction();

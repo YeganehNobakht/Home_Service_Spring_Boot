@@ -53,7 +53,7 @@
                         ${sessionScope.myCustomerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Account Info</a></li>
+                        <li><a class="dropdown-item" href="/customer/accountInfo">Account Info</a></li>
                         <li><a class="dropdown-item" href="/customer/changePass">Change Password</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -66,9 +66,6 @@
                     <a class="nav-link " aria-current="page" href="/">Home</a>
                 </li>
 
-                <li class="nav-item d-flex justify-content-end">
-                    <a class="nav-link" href="#">Registration Of Specialists</a>
-                </li>
 
             </ul>
 
@@ -113,6 +110,7 @@
                 <h5 class="d-flex justify-content-center text-info">${message}</h5>
                 <h5 class="d-flex justify-content-center text-danger">${error}</h5>
 
+                <img src="/static/image/showOrders.jpg" alt="" style="width: 600px;height: 280px;">
             </div>
 
         </div>

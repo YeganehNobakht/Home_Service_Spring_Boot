@@ -10,6 +10,7 @@ import java.util.Locale;
 public class MaktabMessageSource {
 
     private final static Locale LOCALE = new Locale("en_US");
+    private final static Locale LOCALEFA = new Locale("fa_IR");
 
     private final MessageSource messageSource;
 
@@ -19,8 +20,14 @@ public class MaktabMessageSource {
 
     public String getEnglish(String key){
         return messageSource.getMessage(key, null,LOCALE);
-    }public String getEnglish(String key,Object[] objects){
+    }
+
+    public String getEnglish(String key,Object[] objects){
         return messageSource.getMessage(key,objects,LOCALE);
     }
 
+    public String getPersian(String key){
+        return messageSource.getMessage(key, null,LOCALEFA);
     }
+    }
+

@@ -17,7 +17,7 @@ public interface ServiceCategoryService {
 
     void addServiceCategory(ServiceCategoryDto serviceCategoryDto) throws ServiceDuplicateException;
 
-    void updateSpecialist(SpecialistDto specialistDto) ;
+    void updateSpecialist(SpecialistDto specialistDto);
 
     void deleteSpecialist(ServiceCategoryDto serviceCategoryDto, SpecialistDto specialistDto) throws ServiceNotFoundException, SpecialistNotFoundException;
 

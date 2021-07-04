@@ -10,12 +10,6 @@ import java.util.List;
 
 @Repository
 public interface SubCategoryRepository extends JpaRepository<SubCategory, Integer> {
-//    void create(SubCategory subCategory);
-//    void update(SubCategory subCategory);
-//    Optional<SubCategory> get(Integer id);
-//    Optional<SubCategory> getByName(String name);
-//    List<SubCategory> getAll();
-//    void delete(Integer integer);
 
     SubCategory findByName(String number);
 

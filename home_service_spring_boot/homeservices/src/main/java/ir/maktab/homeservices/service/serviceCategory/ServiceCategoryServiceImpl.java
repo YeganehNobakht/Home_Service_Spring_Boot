@@ -65,7 +65,6 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
 
     @Override
     public void updateSpecialist(SpecialistDto specialistDto) {
-//        specialistService.update(specialistDto);
     }
 
     @Override
@@ -136,28 +135,13 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
     public void addServiceToSpecialist(String serviceName, SpecialistDto specialistDto) throws SpecialistNotFoundException, ServiceAlreadyExistException {
         ServiceCategory service = serviceCategoryRepository.findByName(serviceName);
         SpecialistDto dto = specialistService.findByUsername(specialistDto.getUsername());
-        if(dto.getServiceCategoryList().stream().noneMatch(s->s.getName().equals(serviceName))) {
+        if (dto.getServiceCategoryList().stream().noneMatch(s -> s.getName().equals(serviceName))) {
             ServiceCategoryDto serviceCategoryDto = mapper.toServiceCategoryDto(service);
             dto.getServiceCategoryList().add(serviceCategoryDto);
             specialistService.update(dto);
-        }
-        else
-            throw new ServiceAlreadyExistException(maktabMessageSource.getEnglish("service.exist.in.specialist.service.list",new Object[]{serviceName}));
+        } else
+            throw new ServiceAlreadyExistException(maktabMessageSource.getEnglish("service.exist.in.specialist.service.list", new Object[]{serviceName}));
     }
-
-//    @Override
-//    public void updateSpecialist(ServiceCategoryDto serviceCategoryDto, SpecialistDto specialistDto) throws Exception {
-////        ServiceCategory serviceCategory = serviceCategoryMapper.toServiceCategory(serviceCategoryDto);
-////        Specialist specialist = specialistMapper.toSpecialist(specialistDto);
-////        if (serviceCategory.getSpecialistList().stream().anyMatch(specialist1 -> specialist1.getUsername().equals(specialist.getUsername()))){
-////
-////        }
-//        if (specialistService.get(specialistDto.getUsername())!=null){
-//            specialistService.update(specialistDto);
-//        }
-//        specialistService.update(specialistDto);
-//
-//    }
 
 
 }

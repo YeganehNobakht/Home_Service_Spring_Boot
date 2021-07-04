@@ -11,24 +11,19 @@ import java.util.Optional;
 
 @Repository
 public interface SpecialistRepository extends JpaRepository<Specialist, Integer> {
-//    void create(Specialist specialist);
-//    void update(Specialist specialist);
-//    Optional<Specialist> get(String id);
-//    List<Specialist> getAll();
-//    void delete(String  username);
-//    List<SpecialistDto> filterSpecialist(SpecialistDto specialistDto);
-
 
 
     Optional<Specialist> findByEmailAndUsername(String email, String username);
+
     Optional<Specialist> findByEmail(String email);
+
     Optional<Specialist> findByUsername(String username);
 
     Optional<Specialist> findByUsernameAndPassword(String username, String Password);
 
     @Modifying
     @Query("update Specialist s set s.rate = :rate,s.commentCounter=:counter where s.id = :id")
-    void updateRateAndCommentCounter(@Param("id") Integer id, @Param("rate") Double score, @Param("counter")Integer counter);
+    void updateRateAndCommentCounter(@Param("id") Integer id, @Param("rate") Double score, @Param("counter") Integer counter);
 
     @Modifying
     @Query("update Specialist s set s.Balance = :balance where s.id = :id")

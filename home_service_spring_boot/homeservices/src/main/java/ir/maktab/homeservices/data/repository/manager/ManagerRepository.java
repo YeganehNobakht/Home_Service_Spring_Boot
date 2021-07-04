@@ -1,7 +1,6 @@
 package ir.maktab.homeservices.data.repository.manager;
 
 import ir.maktab.homeservices.data.entity.Manager;
-import ir.maktab.homeservices.dto.ManagerDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

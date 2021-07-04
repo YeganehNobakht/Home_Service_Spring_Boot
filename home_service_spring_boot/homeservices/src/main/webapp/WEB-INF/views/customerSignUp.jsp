@@ -5,20 +5,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>customer login</title>
-    <!-- Required meta tags -->
+    <title>customer service</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link href="<c:url value="/static/css/service.css"/>" rel="stylesheet"/>
     <link href="<c:url value="/static/css/firstPage.css"/>" rel="stylesheet"/>
-    <link href="<c:url value="/static/image"/>" rel="stylesheet"/>
 </head>
 <body>
 <%--navbar--%>
@@ -32,7 +29,7 @@
                 Bama
             </a>
         </div>
-        <a class="navbar-brand" href="in">Home</a>
+        <a class="navbar-brand" href="/">Home</a>
 
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
@@ -83,6 +80,7 @@
                 <td></td>
                 <td><p class="text-danger">${name}</p></td>
             </tr>
+
             <tr>
                 <td><form:label path="lastName" for="lastName">LastName: </form:label></td>
                 <td><form:input path="lastName" id="lastName"/></td>
@@ -91,6 +89,7 @@
                 <td></td>
                 <td><p class="text-danger">${lastName}</p></td>
             </tr>
+
             <tr>
                 <td><form:label path="email" for="email">Email: </form:label></td>
                 <td><form:input  path="email" id="email"/></td>
@@ -99,22 +98,25 @@
                 <td></td>
                 <td><p class="text-danger">${email}</p></td>
             </tr>
+
             <tr>
-                <td><form:label path="username" for="username">Username:</form:label></td>
-                <td><form:input path="username" name="username" id="username"/></td>
+                <td><form:label path="username" for="UserName">Username:</form:label></td>
+                <td><form:input path="username" name="UserName" id="UserName"/></td>
             </tr>
             <tr>
                 <td></td>
                 <td><p class="text-danger">${username}</p></td>
             </tr>
+
             <tr>
-                <td><form:label path="password" for="password">Password:</form:label></td>
-                <td><form:input path="password" name="password" id="password"/></td>
+                <td><form:label path="password" for="Password">Password:</form:label></td>
+                <td><form:input path="Password" name="Password" id="Password"/></td>
             </tr>
             <tr>
                 <td></td>
                 <td><p class="text-danger">${password}</p></td>
             </tr>
+
             <tr>
                 <td></td>
                 <td><form:button id="login" name="login">Register</form:button></td>

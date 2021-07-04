@@ -53,7 +53,7 @@
                         ${sessionScope.mySpecialistDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Account Info</a></li>
+<%--                        <li><a class="dropdown-item" href="#">Account Info</a></li>--%>
                         <li><a class="dropdown-item" href="/specialist/changePass">Change Password</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -64,10 +64,6 @@
 
                 <li class="nav-item">
                     <a class="nav-link " aria-current="page" href="/">Home</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="<c:url value="/customer/login"/>">Registration Of Customer</a>
                 </li>
 
             </ul>

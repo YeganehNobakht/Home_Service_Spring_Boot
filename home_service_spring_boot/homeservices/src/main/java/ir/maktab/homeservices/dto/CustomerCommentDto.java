@@ -1,16 +1,16 @@
 package ir.maktab.homeservices.dto;
 
 import ir.maktab.homeservices.data.entity.CustomerOrder;
+import org.hibernate.validator.constraints.Range;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.NotNull;
 
 public class CustomerCommentDto {
     private Integer id;
     private String comment;
-    @NotBlank(message = "blank")
-    @Size(min = 1, max = 5, message = "rate.size")
-    private String score;
+    @NotNull(message = "rate.null")
+    @Range(min = 1, max = 5, message = "rate.size")
+    private Double score;
     private CustomerDto customerDto;
     private SpecialistDto specialistDto;
     private CustomerOrder customerOrder;
@@ -33,11 +33,11 @@ public class CustomerCommentDto {
         return this;
     }
 
-    public String getScore() {
+    public Double getScore() {
         return score;
     }
 
-    public CustomerCommentDto setScore(String score) {
+    public CustomerCommentDto setScore(Double score) {
         this.score = score;
         return this;
     }

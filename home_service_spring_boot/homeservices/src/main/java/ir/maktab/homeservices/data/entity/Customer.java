@@ -103,8 +103,8 @@ public class Customer extends User {
 
     @Override
     public Customer setVerificationCode(String verificationCode) {
-       super.setVerificationCode(verificationCode);
-       return this;
+        super.setVerificationCode(verificationCode);
+        return this;
     }
 
     @Override

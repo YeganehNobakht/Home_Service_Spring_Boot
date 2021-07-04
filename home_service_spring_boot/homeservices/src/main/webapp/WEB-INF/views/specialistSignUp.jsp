@@ -34,7 +34,7 @@
                 Bama
             </a>
         </div>
-        <a class="navbar-brand" href="in">Home</a>
+        <a class="navbar-brand" href="/">Home</a>
 
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">

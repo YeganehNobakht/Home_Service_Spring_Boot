@@ -14,16 +14,12 @@ import java.util.List;
 
 @Repository
 public interface CustomerOrderRepository extends JpaRepository<CustomerOrder, Integer>, JpaSpecificationExecutor<CustomerOrder> {
-//    void create(CustomerOrder customerOrder);
-//    void update(CustomerOrder customerOrder);
-//    Optional<CustomerOrder> get(Integer id);
-//    List<CustomerOrder> getAll();
-//    void delete(Integer integer);
-
 
 
     List<CustomerOrder> findByServiceCategoryAndWorkDateGreaterThanEqual(ServiceCategory serviceCategory, Date date);
+
     List<CustomerOrder> findByCustomerAndOrderStatusNot(Customer customer, OrderStatus orderStatus);
+
     @Query("SELECT c FROM CustomerOrder c WHERE c.orderStatus = :status and c.customer.id = :customerId")
     List<CustomerOrder> findUserByStatusAndCustomer(@Param("status") OrderStatus orderStatus, @Param("customerId") Integer customerId);
 
@@ -33,11 +29,13 @@ public interface CustomerOrderRepository extends JpaRepository<CustomerOrder, In
 
     @Modifying
     @Query("update CustomerOrder o set o.orderStatus = :orderStatus,o.price=:price,o.specialist=:specialist where o.id = :id")
-    void updateOrderStatusAndPriceAndSpecialist(@Param("id") Integer id, @Param("orderStatus") OrderStatus orderStatus, @Param("price")double price, @Param("specialist") Specialist specialist);
+    void updateOrderStatusAndPriceAndSpecialist(@Param("id") Integer id, @Param("orderStatus") OrderStatus orderStatus, @Param("price") double price, @Param("specialist") Specialist specialist);
 
     List<CustomerOrder> findByOrderStatusNotAndCustomer_Id(OrderStatus orderStatus, Integer customerId);
 
     @Modifying
     @Query("update CustomerOrder  o set o.customerComment=:customerComment where o.id = :id")
     void updateComment(@Param("id") Integer orderId, @Param("customerComment") CustomerComment customerComment);
+
+    List<CustomerOrder> findByServiceCategoryAndOrderStatusAndWorkDateGreaterThanEqual(ServiceCategory s, OrderStatus orderStatus, Date date);
 }

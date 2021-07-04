@@ -4,7 +4,7 @@ import ir.maktab.homeservices.data.entity.CustomerOrder;
 import ir.maktab.homeservices.data.entity.User;
 import ir.maktab.homeservices.data.repository.User.UserRepository;
 import ir.maktab.homeservices.data.repository.customerOrder.CustomerOrderRepository;
-import ir.maktab.homeservices.data.repository.restSpecification.RestSpecifications;
+import ir.maktab.homeservices.data.repository.specification.RestSpecifications;
 import ir.maktab.homeservices.dto.CustomerOrderDto;
 import ir.maktab.homeservices.dto.UserDto;
 import ir.maktab.homeservices.dto.restDto.OrderFilterDto;
@@ -45,7 +45,7 @@ public class ManagerRestServiceImpl implements ManagerRestService {
             List<CustomerOrder> all = customerOrderRepository.findAll(customerOrderSpecification);
             return all.stream().map(mapper::toCustomerOrderDto).collect(Collectors.toList());
         }
-        throw new UserNotFoundException(maktabMessageSource.getEnglish("user.not.found",new Object[]{dto.getUserId()}));
+        throw new UserNotFoundException(maktabMessageSource.getEnglish("user.not.found", new Object[]{dto.getUserId()}));
     }
 
     @Override

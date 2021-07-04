@@ -18,7 +18,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link href="<c:url value="/static/css/service.css"/>" rel="stylesheet"/>
-    <link href="<c:url value="/static/image"/>" rel="stylesheet"/>
+    <link href="<c:url value="/static/css/firstPage.css"/>" rel="stylesheet"/>
 </head>
 <body>
 <%
@@ -50,10 +50,10 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle active" href="" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        ${sessionScope.myCustomerDto.username}
+                        ${sessionScope.myManagerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/mngr/changePass">Change Password</a></li>
+<%--                        <li><a class="dropdown-item" href="/mngr/changePass">Change Password</a></li>--%>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -70,7 +70,8 @@
 
         </div>
         <a class="navbar-brand" href="/mngr/userInfo"><img src="/static/image/order.png"
-                                                           alt="" width="30" height="25" class="d-inline-block align-text-top">Get Users Info</a>
+                                                           alt="" width="30" height="25"
+                                                           class="d-inline-block align-text-top">Get Users Info</a>
     </div>
 </nav>
 <hr>
@@ -84,34 +85,48 @@
             <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
                     onclick="parent.location='/mngr/subService'">Add Sub-Service
             </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/Speciality'">Add Speciality
+            </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/reportOfUsers'">Users Activities
+            </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/reportOfOrders'">Orders
+            </button>
         </div>
 
     </div>
-    <div class="m11">
+    <div class="mAddService1">
         <h5 class="d-flex justify-content-center text-info">${message}</h5>
         <h5 class="d-flex justify-content-center text-danger">${error}</h5>
 
         <h3 class="d-flex justify-content-center text-black">Add service:</h3>
-        <form:form modelAttribute="serviceDto" id="loginForm"  action="/service/add" method="post"><br><br>
+        <div style="background-color: chartreuse">
+        <form:form modelAttribute="serviceDto" id="loginForm" action="/service/add" method="post"><br><br>
             <table class="table table-striped table-hover">
-                    <tr>
-                        <td><form:label path="name" for="name">Name: </form:label></td>
-                        <td><form:input  path="name" id="name"/></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><p class="text-danger">${name}</p></td>
-                    </tr>
+                <tr>
+                    <td><form:label path="name" for="name">Name: </form:label></td>
+                    <td><form:input path="name" id="name"/></td>
+                </tr>
                 <tr>
                     <td></td>
-                    <td><form:button id="add" name="add">Add</form:button></td>
+                    <td><p class="text-danger">${name}</p></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><form:button class="btn btn-warning" id="add" name="add">Add</form:button></td>
                 </tr>
 
             </table>
         </form:form>
     </div>
-
 </div>
+    <div class="mAddService1 ">
+        <img src="${pageContext.request.contextPath}/static/image/addService.png" alt="">
+    </div>
+
+
 <%
     }
 %>

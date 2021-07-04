@@ -53,7 +53,7 @@
                         ${sessionScope.mySpecialistDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Account Info</a></li>
+<%--                        <li><a class="dropdown-item" href="#">Account Info</a></li>--%>
                         <li><a class="dropdown-item" href="/specialist/chanePass">Change Password</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -65,11 +65,6 @@
                 <li class="nav-item">
                     <a class="nav-link " aria-current="page" href="/">Home</a>
                 </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="<c:url value="/customer/login"/>">Registration Of Customer</a>
-                </li>
-
             </ul>
 
         </div>
@@ -117,7 +112,7 @@
                     <td><form:input size="20" path="startTime" type="date" name="startTime"/></td>
                 </tr>
                 <tr>
-                    <td><form:label path="durationOfWork">Work Duration</form:label></td>
+                    <td><form:label path="durationOfWork">Work Duration(minute)</form:label></td>
                     <td><form:input size="20" path="durationOfWork" name="durationOfWork"/></td>
                 </tr>
                 <tr>
@@ -131,7 +126,7 @@
                 <tr>
                     <td></td>
                     <td>
-                        <form:button name="add">Add</form:button>
+                        <form:button class="btn btn-info" name="add">Add</form:button>
                     </td>
                 </tr>
             </table>

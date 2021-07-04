@@ -60,7 +60,7 @@
         <tr>
             <td></td>
             <td colspan="2">
-                <form:errors path="cardNumber" cssClass="text-danger"/>
+                <p class="text-danger">${cardNumber}</p>
             </td>
         </tr>
         <tr>
@@ -71,7 +71,7 @@
         <tr>
             <td></td>
             <td colspan="2">
-                <form:errors path="ccv2" cssClass="text-danger"/>
+                <p class="text-danger">${ccv2}</p>
             </td>
         </tr>
         <tr>
@@ -83,8 +83,8 @@
         <tr>
             <td></td>
 
-            <td><form:errors path="cardExpirationMonth" cssClass="text-danger"/></td>
-            <td><form:errors path="cardExpirationYear" cssClass="text-danger"/></td>
+            <td><p class="text-danger">${cardExpirationMonth}</p></td>
+            <td><p class="text-danger">${cardExpirationYear}</p></td>
         </tr>
         <tr>
             <td><form:label path="captcha" >Security Code</form:label></td>
@@ -107,12 +107,12 @@
         <tr>
             <td></td>
 
-            <td colspan="2"><form:errors path="dynamicPassword" cssClass="text-danger"/></td>
+            <td colspan="2"><p class="text-danger">${dynamicPassword}</p></td>
         </tr>
         <tr>
             <td><form:label path="email" >Email</form:label></td>
 
-            <td colspan="2"><form:input path="email" placeHolder="email"/></td>
+            <td colspan="2"><form:input type="email" path="email" placeHolder="email"/></td>
         </tr>
         <tr>
             <td></td>
@@ -161,7 +161,7 @@
 
         // Redirect when countdown is over
         if (timeleft < 0) {
-            window.location.href="http://localhost:8080/payment/balanceTimeout"
+            window.location.href="${pageContext.request.contextPath}/payment/balanceTimeout"
         }
     }, 1000);
 </script>

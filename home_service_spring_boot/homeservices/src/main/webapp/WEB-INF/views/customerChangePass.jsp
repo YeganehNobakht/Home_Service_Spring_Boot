@@ -52,7 +52,7 @@
                         ${sessionScope.myCustomerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Account Info</a></li>
+                        <li><a class="dropdown-item" href="/customer/accountInfo">Account Info</a></li>
                         <li><a class="dropdown-item" href="/customer/changePass">Change Password</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -63,10 +63,6 @@
 
                 <li class="nav-item">
                     <a class="nav-link " aria-current="page" href="/">Home</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Registration Of Specialists</a>
                 </li>
 
             </ul>
@@ -106,7 +102,7 @@
                     </tr>
                     <tr>
                         <td></td>
-                        <td><p  class="text-danger">${oldPass}</td>
+                        <td><p  class="text-danger">${oldPass}</p></td>
                     </tr>
                     <tr>
                         <td><form:label path="newPass" for="new">New Password</form:label></td>
@@ -114,7 +110,7 @@
                     </tr>
                     <tr>
                         <td></td>
-                        <t<td><p  class="text-danger">${newPaa}</td>
+                        <td><p  class="text-danger">${newPaa}</p></td>
                     </tr>
                     <tr>
                         <td></td>

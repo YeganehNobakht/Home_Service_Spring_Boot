@@ -3,7 +3,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <html lang="en">
 <head>
-    <title>first page</title>
+    <title>login</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,7 +15,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link href="<c:url value="/static/css/firstPage.css"/>" rel="stylesheet"/>
-
+    <style>
+        .bgc {
+            background-color: #c1efc1;
+            margin-right: 250px;
+            margin-left: 250px;
+        }
+    </style>
 </head>
 <body>
 <%--navbar--%>
@@ -29,7 +35,7 @@
                 Bama
             </a>
         </div>
-        <a class="navbar-brand" href="in">Home</a>
+        <a class="navbar-brand" href="/">Home</a>
 
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
@@ -73,7 +79,7 @@
 <h5 class="d-flex justify-content-center text-info">${message}</h5>
 <h5 class="d-flex justify-content-center text-danger">${error}</h5>
 <div class="bgc">
-    <form:form  id="loginForm" modelAttribute="userDto" action="/userLogin" method="post">
+    <form:form id="loginForm" modelAttribute="userDto" action="/userLogin" method="post">
         <table class="table table-striped-table-hover">
             <tr>
                 <td>

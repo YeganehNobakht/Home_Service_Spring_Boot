@@ -1,6 +1,7 @@
 package ir.maktab.homeservices.service.customerService;
 
 import ir.maktab.homeservices.data.entity.Customer;
+import ir.maktab.homeservices.data.entity.enums.UserStatus;
 import ir.maktab.homeservices.data.repository.Customer.CustomerRepository;
 import ir.maktab.homeservices.dto.CustomerDto;
 import ir.maktab.homeservices.dto.CustomerOrderDto;
@@ -8,8 +9,6 @@ import ir.maktab.homeservices.exceptions.checkes.*;
 import ir.maktab.homeservices.service.customerOrderService.CustomerOrderService;
 import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
 import ir.maktab.homeservices.service.mapper.Mapper;
-import ir.maktab.homeservices.service.serviceCategory.ServiceCategoryService;
-import ir.maktab.homeservices.service.subCategoryService.SubCategoryService;
 import ir.maktab.homeservices.service.userService.UserService;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,8 +24,6 @@ import java.util.Optional;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
-    private final ServiceCategoryService serviceCategoryService;
-    private final SubCategoryService subCategoryService;
     private final CustomerOrderService customerOrderService;
     private final Mapper mapper;
     private final MaktabMessageSource maktabMessageSource;
@@ -34,13 +31,9 @@ public class CustomerServiceImpl implements CustomerService {
     private final UserService userService;
 
     public CustomerServiceImpl(CustomerRepository customerRepository,
-                               ServiceCategoryService serviceCategoryService,
-                               SubCategoryService subCategoryService,
                                CustomerOrderService customerOrderService,
                                Mapper mapper, MaktabMessageSource maktabMessageSource, PasswordEncoder passwordEncoder, UserService userService) {
         this.customerRepository = customerRepository;
-        this.serviceCategoryService = serviceCategoryService;
-        this.subCategoryService = subCategoryService;
         this.customerOrderService = customerOrderService;
         this.mapper = mapper;
         this.maktabMessageSource = maktabMessageSource;
@@ -66,18 +59,10 @@ public class CustomerServiceImpl implements CustomerService {
             throw new CustomerNotFoundException(maktabMessageSource.getEnglish("customer.not.found", new Object[]{username}));
     }
 
-    @Override
-    public Customer changePassword(String username, String oldPass, String newPass) throws CustomerNotFoundException, PasswordNotFoundException {
-        Optional<Customer> customer = customerRepository.findByUsername(username);
-        if (customer.isPresent()) {
-            if (customer.get().getPassword().equals(oldPass)) {
-                customer.get().setPassword(newPass);
-                return customerRepository.save(customer.get());
-            }
-            throw new PasswordNotFoundException(maktabMessageSource.getEnglish("password.not.found"));
 
-        }
-        throw new CustomerNotFoundException(maktabMessageSource.getEnglish("customer.not.found", new Object[]{username}));
+    @Override
+    public void changePassword(CustomerDto customerDto, String oldPass, String newPass) throws PasswordNotFoundException {
+        userService.checkForChangePassword(customerDto, oldPass, newPass);
     }
 
     @Override
@@ -90,8 +75,8 @@ public class CustomerServiceImpl implements CustomerService {
         String encodedPassword = passwordEncoder.encode(customerDto.getPassword());
         customer.setPassword(encodedPassword);
         String randomCode = RandomString.make(64);
-        customer.setVerificationCode(randomCode).setEnabled(false);
-        customerDto.setVerificationCode(randomCode).setEnabled(false);
+        customer.setVerificationCode(randomCode).setEnabled(false).setUserStatus(UserStatus.NEW);
+        customerDto.setVerificationCode(randomCode).setEnabled(false).setUserStatus(UserStatus.NEW);
 
         customerRepository.save(customer);
         userService.sendVerificationEmail(customerDto, siteURL);

@@ -36,13 +36,13 @@ public class ManagerRestController {
     }
 
     @PostMapping(value = "/filterOrders", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    private ResponseEntity<Object> filterOrders(@RequestBody OrderFilterDto dto){
+    private ResponseEntity<Object> filterOrders(@RequestBody OrderFilterDto dto) {
         List<CustomerOrderDto> orderDtoList = managerRestService.filterAllOrders(dto);
         return new ResponseEntity<>(orderDtoList, HttpStatus.OK);
     }
 
     @PostMapping(value = "/filterUsers", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    private ResponseEntity<?> filterUsers(@RequestBody UserReportDto dto){
+    private ResponseEntity<?> filterUsers(@RequestBody UserReportDto dto) {
         List<UserDto> userDtoList = managerRestService.userFilter(dto);
         return new ResponseEntity<>(userDtoList, HttpStatus.OK);
     }

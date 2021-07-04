@@ -1,15 +1,15 @@
 package ir.maktab.homeservices.web;
 
+import ir.maktab.homeservices.data.entity.enums.OrderStatus;
+import ir.maktab.homeservices.data.entity.enums.UserStatus;
 import ir.maktab.homeservices.dto.*;
 import ir.maktab.homeservices.dto.enums.UserRole;
-import ir.maktab.homeservices.exceptions.checkes.ManagerNotFoundException;
-import ir.maktab.homeservices.exceptions.checkes.ServiceAlreadyExistException;
-import ir.maktab.homeservices.exceptions.checkes.ServiceNotFoundException;
-import ir.maktab.homeservices.exceptions.checkes.SpecialistNotFoundException;
+import ir.maktab.homeservices.exceptions.checkes.*;
 import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
 import ir.maktab.homeservices.service.managerService.ManagerService;
 import ir.maktab.homeservices.service.serviceCategory.ServiceCategoryService;
 import ir.maktab.homeservices.service.specialistService.SpecialistService;
+import ir.maktab.homeservices.service.subCategoryService.SubCategoryService;
 import ir.maktab.homeservices.service.userService.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,13 +31,15 @@ public class managerController {
     private final ServiceCategoryService serviceCategoryService;
     private final SpecialistService specialistService;
     private final MaktabMessageSource maktabMessageSource;
+    private final SubCategoryService subCategoryService;
 
-    public managerController(ManagerService managerService, UserService userService, ServiceCategoryService serviceCategoryService, SpecialistService specialistService, MaktabMessageSource maktabMessageSource) {
+    public managerController(ManagerService managerService, UserService userService, ServiceCategoryService serviceCategoryService, SpecialistService specialistService, MaktabMessageSource maktabMessageSource, SubCategoryService subCategoryService) {
         this.managerService = managerService;
         this.userService = userService;
         this.serviceCategoryService = serviceCategoryService;
         this.specialistService = specialistService;
         this.maktabMessageSource = maktabMessageSource;
+        this.subCategoryService = subCategoryService;
     }
 
     @GetMapping("/login")
@@ -50,14 +52,14 @@ public class managerController {
     public String managerLogin(HttpServletRequest request) throws ManagerNotFoundException, SpecialistNotFoundException {
         logger.info("...manager register...");
         HttpSession session = request.getSession(false);
-        ManagerDto dto = managerService.findByUsername((String) session.getAttribute("username"));
+        ManagerDto dto = managerService.findByUsername((String) session.getAttribute("loginUsername"));
 
         session.setAttribute("myManagerDto", dto);
         return "managerService";
     }
 
     @GetMapping("/userInfo")
-    public ModelAndView getUsers(Model model, HttpServletRequest request) {
+    public ModelAndView getUsers(Model model, HttpServletRequest request) throws UserNotFoundException {
         logger.info("...show user informations...");
         List<UserDto> allUser = userService.findAll();
         model.addAttribute("allUser", allUser);
@@ -65,6 +67,7 @@ public class managerController {
         HttpSession session = request.getSession();
         session.setAttribute("services", all);
         session.setAttribute("role", new UserRole[]{UserRole.Customer, UserRole.Specialist});
+        session.setAttribute("userStatus", UserStatus.WAITING);
         return new ModelAndView("managerGetUserInfo", "userDto", new UserFilter());
     }
 
@@ -81,17 +84,17 @@ public class managerController {
     }
 
     @GetMapping("/subService")
-    public ModelAndView addSubService(Model model) {
+    public ModelAndView addSubService(HttpServletRequest request, Model model) {
         logger.info("...adding sub-service...");
         List<ServiceCategoryDto> all = serviceCategoryService.getAll();
+        request.getSession().setAttribute("serviceList", all);
         model.addAttribute("serviceList", all);
         return new ModelAndView("managerAddSubService", "subServiceDto", new SubCategoryDto());
     }
 
     @GetMapping("/Speciality")
     public String showAllSpecialistAndTheirSpeciality(Model model) {
-        List<SpecialistDto> specialistDtoList = specialistService.findAll();
-
+        List<SpecialistDto> specialistDtoList = specialistService.findApproveSpecialist();
         model.addAttribute("specialistDtoList", specialistDtoList);
         return "managerAddSpeciality";
     }
@@ -117,4 +120,37 @@ public class managerController {
         return "managerSuccessPage";
 
     }
+
+    @GetMapping("/orderForAUser/{id}")
+    public String showOrderForAUser(@PathVariable("id") Integer userId, HttpServletRequest request) {
+        request.getSession().setAttribute("orderForUserId", userId);
+        request.getSession().setAttribute("orderStatus", OrderStatus.values());
+        return "managerGetOrdersForAUser";
+    }
+
+    @GetMapping("/reportOfUsers")
+    public String reportingUsers() {
+        return "managerReportingUsers";
+    }
+
+    @GetMapping("/reportOfOrders")
+    public String reportingOrders(Model model) {
+        List<ServiceCategoryDto> all = serviceCategoryService.getAll();
+        List<SubCategoryDto> SubServiceList = subCategoryService.getAll();
+        model.addAttribute("serviceList", all);
+        model.addAttribute("SubServiceList", SubServiceList);
+        model.addAttribute("status", OrderStatus.values());
+        return "managerReportingOrders";
+    }
+
+    @GetMapping("/confirmUser/{id}")
+    public String confirmUser(@PathVariable("id") Integer id, HttpServletRequest request, Model model) throws UserNotFoundException {
+        managerService.confirmUser(id);
+        List<UserDto> allUser = userService.findAll();
+        model.addAttribute("allUser", allUser);
+        model.addAttribute("userDto", new UserFilter());
+        model.addAttribute("message", maktabMessageSource.getEnglish("user.status.update", new Object[]{id}));
+        return "managerGetUserInfo";
+    }
+
 }

@@ -19,7 +19,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link href="<p:url value="/static/css/service.css"/>" rel="stylesheet"/>
-    <link href="<p:url value="/static/image"/>" rel="stylesheet"/>
+<%--    <link href="<p:url value="/static/image"/>" rel="stylesheet"/>--%>
 </head>
 <body>
 <%
@@ -54,7 +54,7 @@
                         ${sessionScope.myCustomerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Account Info</a></li>
+                        <li><a class="dropdown-item" href="/customer/accountInfo">Account Info</a></li>
                         <li><a class="dropdown-item" href="/customer/changePass">Change Password</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -67,9 +67,6 @@
                     <a class="nav-link " aria-current="page" href="/">Home</a>
                 </li>
 
-                <li class="nav-item d-flex justify-content-end">
-                    <a class="nav-link" href="#">Registration Of Specialists</a>
-                </li>
 
             </ul>
 
@@ -144,7 +141,7 @@
     function choose(id) {
         console.log("in")
         //requestParam-> window.location.href = "http://localhost:8080/suggestion/getSuggestion/?orderId="+id
-        window.location.href = "http://localhost:8080/customer/paymentInformations/"+id
+        window.location.href = "${pageContext.request.contextPath}/customer/paymentInformations/"+id
 
     }
 </script>

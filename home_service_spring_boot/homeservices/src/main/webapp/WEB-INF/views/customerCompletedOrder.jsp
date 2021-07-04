@@ -19,7 +19,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link href="<p:url value="/static/css/service.css"/>" rel="stylesheet"/>
-    <link href="<p:url value="/static/image"/>" rel="stylesheet"/>
 </head>
 <body>
 <%
@@ -54,7 +53,7 @@
                         ${sessionScope.myCustomerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Account Info</a></li>
+                        <li><a class="dropdown-item" href="/customer/accountInfo">Account Info</a></li>
                         <li><a class="dropdown-item" href="/customer/changePass">Change Password</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -67,16 +66,13 @@
                     <a class="nav-link " aria-current="page" href="/">Home</a>
                 </li>
 
-                <li class="nav-item d-flex justify-content-end">
-                    <a class="nav-link" href="#">Registration Of Specialists</a>
-                </li>
-
             </ul>
 
 
         </div>
         <a class="navbar-brand" href="/customer/showOrders"><img src="/static/image/order.png"
-                                                                 alt="" width="30" height="25" class="d-inline-block align-text-top">Orders</a>
+                                                                 alt="" width="30" height="25"
+                                                                 class="d-inline-block align-text-top">Orders</a>
     </div>
 </nav>
 <hr>
@@ -86,10 +82,12 @@
         <div class="d-flex flex-column align-items-center mt-5">
             <button type="button" class="btn btn-light btn-lbtn-block w-75 d-flex justify-content-center"
                     onclick="parent.location='/order/show'">Add Order
-            </button><br>
+            </button>
+            <br>
             <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
                     onclick="parent.location='/customer/increaseBalance'">Increase Balance
-            </button><br>
+            </button>
+            <br>
             <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
                     onclick="parent.location='/customer/finishOrder'">Finish/Pay
             </button>
@@ -121,7 +119,7 @@
                             <td>Sub Service</td>
                             <td>Work Date</td>
                             <td>Order Status</td>
-                            <td>Selection</td>
+                            <td>Add comment</td>
                         </tr>
                         <c:forEach items="${orderDto}" var="o">
                             <tr>
@@ -130,11 +128,21 @@
                                 <td>${o.subCategory.name}</td>
                                 <td>${o.workDate}</td>
                                 <td>${o.orderStatus}</td>
-                                <td>
-                                <c:if test="${o.customerCommentDto==null}">
-                                    <a name="Select" onclick="choose(${o.id})"><button type="button">Comment</button></a>
-                                </c:if>
-                                </td>
+
+                                <c:choose>
+                                    <c:when test="${o.customerCommentDto==null}">
+                                        <td><a name="Select" onclick="choose(${o.id})">
+                                            <button class="btn btn-info" type="button">Comment</button>
+                                        </a></td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td>Has Comment</td>
+                                    </c:otherwise>
+                                </c:choose>
+                                    <%--                                <c:if test="${o.customerCommentDto==null}">--%>
+                                    <%--                                    <a name="Select" onclick="choose(${o.id})"><button  class="btn btn-info" type="button">Comment</button></a>--%>
+                                    <%--                                </c:if>--%>
+
                             </tr>
                         </c:forEach>
                     </table>
@@ -153,7 +161,7 @@
     function choose(id) {
         console.log("in")
         //requestParam-> window.location.href = "http://localhost:8080/suggestion/getSuggestion/?orderId="+id
-        window.location.href = "http://localhost:8080/customer/commentPage/"+id
+        window.location.href = "${pageContext.request.contextPath}/customer/commentPage/" + id
 
     }
 </script>

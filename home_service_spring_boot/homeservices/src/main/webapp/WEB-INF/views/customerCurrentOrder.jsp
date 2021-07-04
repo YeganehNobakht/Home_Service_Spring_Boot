@@ -54,7 +54,7 @@
                         ${sessionScope.myCustomerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Account Info</a></li>
+                        <li><a class="dropdown-item" href="/customer/accountInfo">Account Info</a></li>
                         <li><a class="dropdown-item" href="/customer/changePass">Change Password</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -67,16 +67,14 @@
                     <a class="nav-link " aria-current="page" href="/">Home</a>
                 </li>
 
-                <li class="nav-item d-flex justify-content-end">
-                    <a class="nav-link" href="#">Registration Of Specialists</a>
-                </li>
 
             </ul>
 
 
         </div>
         <a class="navbar-brand" href="/customer/showOrders"><img src="/static/image/order.png"
-                                                                 alt="" width="30" height="25" class="d-inline-block align-text-top">Orders</a>
+                                                                 alt="" width="30" height="25"
+                                                                 class="d-inline-block align-text-top">Orders</a>
     </div>
 </nav>
 <hr>
@@ -110,6 +108,7 @@
                 </div>
             </div>
             <div class="m4">
+                <br><br>
                 <h5 class="d-flex justify-content-center text-info">${message}</h5>
                 <h5 class="d-flex justify-content-center text-danger">${error}</h5>
                 <form:form modelAttribute="orders">
@@ -119,8 +118,8 @@
                             <td>Service</td>
                             <td>Sub Service</td>
                             <td>Work Date</td>
-<%--                            <td>Order Status</td>--%>
-                            <td>Selection</td>
+                            <td>Order Status</td>
+                            <td>State</td>
                         </tr>
                         <c:forEach items="${orders}" var="o">
                             <tr>
@@ -128,8 +127,22 @@
                                 <td>${o.serviceCategory.name}</td>
                                 <td>${o.subCategory.name}</td>
                                 <td>${o.workDate}</td>
-<%--                                <td>${o.orderStatus}</td>--%>
-                                <td><a name="Select" onclick="choose(${o.id})"><button type="button">Select</button></a></td>
+                                <td>${o.orderStatus}</td>
+                                <c:choose>
+                                    <c:when test="${o.orderStatus eq sessionScope.waitForOffer}">
+                                        <td><a name="Select" onclick="choose(${o.id})">
+                                            <button class="btn btn-info" type="button">Get Offer</button>
+                                        </a></td>
+                                    </c:when>
+                                    <c:when test="${o.orderStatus eq sessionScope.waitForPay}">
+                                        <td><a name="Select" onclick="choose(${o.id})">
+                                            <button class="btn btn-info" type="button"> Pay Order</button>
+                                        </a></td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td>On going order</td>
+                                    </c:otherwise>
+                                </c:choose>
                             </tr>
                         </c:forEach>
                     </table>
@@ -149,7 +162,7 @@
     function choose(id) {
         console.log("in")
         //requestParam-> window.location.href = "http://localhost:8080/suggestion/getSuggestion/?orderId="+id
-        window.location.href = "http://localhost:8080/customer/getSuggestion/"+id
+        window.location.href = "${pageContext.request.contextPath}/customer/getSuggestion/" + id
 
     }
 </script>

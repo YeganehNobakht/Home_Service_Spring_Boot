@@ -53,7 +53,7 @@
                         ${sessionScope.mySpecialistDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Account Info</a></li>
+<%--                        <li><a class="dropdown-item" href="#">Account Info</a></li>--%>
                         <li><a class="dropdown-item" href="/specialist/chanePass">Change Password</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -118,7 +118,7 @@
                                     <td>${o.subCategory.name}</td>
                                     <td>${o.workDate}</td>
                                     <td>${o.jobDescription}</td>
-                                    <td><a name="Select" onclick="choose(${o.id})"><button type="button">Select</button></a></td>
+                                    <td><a name="Select" onclick="choose(${o.id})"><button class="btn btn-info" type="button">Add Suggestion</button></a></td>
                                 </tr>
                             </c:forEach>
                         </table>
@@ -137,7 +137,7 @@
         function choose(id) {
             console.log("in")
            //requestParam-> window.location.href = "http://localhost:8080/suggestion/getSuggestion/?orderId="+id
-            window.location.href = "http://localhost:8080/suggestion/getSuggestion/"+id
+            window.location.href = "${pageContext.request.contextPath}/suggestion/getSuggestion/"+id
 
         }
     </script>

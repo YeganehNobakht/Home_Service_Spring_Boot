@@ -11,12 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
-//    void create(Customer customer);
-//    void update(Customer customer);
-//    Optional<Customer> get(String  id);
-//    List<Customer> getAll();
-//    void delete(String integer);
-//    List<CustomerDto> filterCustomer(CustomerDto customerDto);
+
     Optional<Customer> findByUsername(String username);
     Optional<Customer> findByEmail(String email);
 

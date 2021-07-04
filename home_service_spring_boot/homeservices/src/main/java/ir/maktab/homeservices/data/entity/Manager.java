@@ -1,6 +1,6 @@
 package ir.maktab.homeservices.data.entity;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
 
 @Entity
 public class Manager extends User {

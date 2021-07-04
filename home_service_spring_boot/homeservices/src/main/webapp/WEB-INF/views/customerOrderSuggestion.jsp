@@ -54,7 +54,7 @@
                         ${sessionScope.myCustomerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Account Info</a></li>
+                        <li><a class="dropdown-item" href="/customer/accountInfo">Account Info</a></li>
                         <li><a class="dropdown-item" href="/customer/changePass">Change Password</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -67,9 +67,6 @@
                     <a class="nav-link " aria-current="page" href="/">Home</a>
                 </li>
 
-                <li class="nav-item d-flex justify-content-end">
-                    <a class="nav-link" href="#">Registration Of Specialists</a>
-                </li>
 
             </ul>
 
@@ -116,14 +113,17 @@
                 <form:form modelAttribute="suggestion" method="post" action="/suggestion/search">
                     <table class="table table-striped table-warning table-hover">
 
-                    <tr>
+                        <tr>
+
                         <td>
                             <form:input path="specialistDto.rate" name="rate" placeHolder="Min Specialist Rate"/>
                         </td>
+
                         <td>
                             <form:input path="price" name="price" placeHolder="Max Price"/>
                         </td>
-                        <td>
+
+                        <td colspan="2" class="d-flex justify-content-center">
                             <form:button name="search">Search</form:button>
                         </td>
                     </tr>
@@ -147,7 +147,7 @@
                                 <td>${o.specialistDto.rate}</td>
                                 <td>${o.durationOfWork}</td>
                                 <td>${o.price}</td>
-                                <td><a name="Select" onclick="choose(${o.id})"><button type="button">Select</button></a></td>
+                                <td><a name="Select" onclick="choose(${o.id})"><button class="btn btn-info" type="button">Accept</button></a></td>
                             </tr>
                         </c:forEach>
                     </table>
@@ -167,7 +167,7 @@
     function choose(id) {
         console.log("in")
         //requestParam-> window.location.href = "http://localhost:8080/suggestion/getSuggestion/?orderId="+id
-        window.location.href = "http://localhost:8080/customer/selectASuggestion/"+id
+        window.location.href = "${pageContext.request.contextPath}/customer/selectASuggestion/"+id
 
     }
 </script>

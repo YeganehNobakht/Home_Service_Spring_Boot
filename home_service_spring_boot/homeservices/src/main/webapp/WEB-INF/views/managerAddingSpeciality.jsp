@@ -52,10 +52,10 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle active" href="" id="navbarDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        ${sessionScope.myCustomerDto.username}
+                        ${sessionScope.myManagerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/mngr/changePass">Change Password</a></li>
+<%--                        <li><a class="dropdown-item" href="/mngr/changePass">Change Password</a></li>--%>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -90,20 +90,24 @@
             <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
                     onclick="parent.location='/mngr/Speciality'">Add Speciality
             </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/reportOfUsers'">Users Activities
+            </button>
+            <button type="button" class="btn btn-light btn-lg btn-block w-75 d-flex justify-content-center"
+                    onclick="parent.location='/mngr/reportOfOrders'">Orders
+            </button>
         </div>
 
     </div>
-    <div class="m11">
+    <div class="mAddService1">
         <h5 class="d-flex justify-content-center text-info">${message}</h5>
         <h5 class="d-flex justify-content-center text-danger">${error}</h5>
-
-
-        <h3 class="d-flex justify-content-center text-black">Add service:</h3>
-        <div class="bgc">
+        <h3 class="d-flex justify-content-center text-black">Add service to an expert:</h3>
+        <div style="background-color: chartreuse">
             <form  id="loginForm" action="/mngr/addingSpecialist" method="post"><br><br>
                 <table class="table table-striped table-hover">
                     <tr>
-                        <td><label for="service">Add New Service:</label></td>
+                        <td><label for="service">Select Service:</label></td>
                         <td><select name="service" id="service" style="width: 202px" size="1">
                             <option value="NONE">...SELECT...</option>
                             <c:forEach items="${serviceList}" var="list">
@@ -112,13 +116,17 @@
                     </tr>
                     <tr>
                         <td></td>
-                        <td><button id="add" name="add">Add</button></td>
+                        <td><button id="add" class="btn btn-success" name="add">Add</button></td>
                     </tr>
 
                 </table>
             </form>
         </div>
     </div>
+    <div class="mAddService1 d-flex justify-content-center ">
+        <img src="${pageContext.request.contextPath}/static/image/addSpeciality.png" style="width: 200Px;height: 230px" alt="">
+    </div>
+
 
 </div>
 <%

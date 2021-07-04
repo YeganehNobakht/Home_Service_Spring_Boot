@@ -53,7 +53,7 @@
                         ${sessionScope.myCustomerDto.username}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Account Info</a></li>
+                        <li><a class="dropdown-item" href="/customer/accountInfo">Account Info</a></li>
                         <li><a class="dropdown-item" href="/customer/changePass">Change Password</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -64,10 +64,6 @@
 
                 <li class="nav-item">
                     <a class="nav-link " aria-current="page" href="/">Home</a>
-                </li>
-
-                <li class="nav-item d-flex justify-content-end">
-                    <a class="nav-link" href="#">Registration Of Specialists</a>
                 </li>
 
             </ul>
@@ -97,12 +93,15 @@
 
     </div>
     <div class="m11">
-        <h5 class="d-flex justify-content-center text-info">${message}</h5>
-        <h5 class="d-flex justify-content-center text-danger">${error}</h5>
+        <h4 class="d-flex justify-content-center text-info">${message}</h4>
+        <h4 class="d-flex justify-content-center text-danger">${error}</h4>
 
         <div >
-            <h5 class="d-flex justify-content-center">${success}</h5>
-            <h5 class="d-flex justify-content-center">${money}</h5>
+            <h4 class="d-flex justify-content-center">${success}</h4>
+            <h4 class="d-flex justify-content-center">${money}</h4>
+        </div >
+        <div class="d-flex justify-content-center">
+        <img src="/static/image/approval.png" alt="" style="width: 550px;height: 250px; margin-top: 10px">
         </div>
     </div>
 

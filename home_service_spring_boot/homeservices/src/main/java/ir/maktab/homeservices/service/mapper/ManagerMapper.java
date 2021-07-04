@@ -5,5 +5,6 @@ import ir.maktab.homeservices.dto.ManagerDto;
 
 public interface ManagerMapper {
     ManagerDto toManagerDto(Manager manager);
+
     Manager toManager(ManagerDto managerDto);
 }
