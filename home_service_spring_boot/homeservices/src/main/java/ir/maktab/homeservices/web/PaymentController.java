@@ -8,6 +8,7 @@ import ir.maktab.homeservices.exceptions.checkes.OrderNotFoundException;
 import ir.maktab.homeservices.service.customerOrderService.CustomerOrderService;
 import ir.maktab.homeservices.service.customerService.CustomerService;
 import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
+import ir.maktab.homeservices.service.paymentService.PaymentService;
 import ir.maktab.homeservices.service.specialistService.SpecialistService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,50 +32,53 @@ public class PaymentController {
     private final CustomerService customerService;
     private final MaktabMessageSource maktabMessageSource;
     private final SpecialistService specialistService;
+    private final PaymentService paymentService;
 
-    public PaymentController(CustomerOrderService customerOrderService, CustomerService customerService, MaktabMessageSource maktabMessageSource, SpecialistService specialistService) {
+    public PaymentController(CustomerOrderService customerOrderService, CustomerService customerService, MaktabMessageSource maktabMessageSource, SpecialistService specialistService, PaymentService paymentService) {
         this.customerOrderService = customerOrderService;
         this.customerService = customerService;
         this.maktabMessageSource = maktabMessageSource;
         this.specialistService = specialistService;
+        this.paymentService = paymentService;
     }
 
     @GetMapping("/byCard")
-    public ModelAndView payByCard(){
+    public ModelAndView payByCard() {
         logger.info("...payment by card...");
-        return new ModelAndView("payment","paymentDto",new PaymentDto());
+        return new ModelAndView("payment", "paymentDto", new PaymentDto());
     }
 
     @GetMapping("/byBalance")
     public String payByAccount(@SessionAttribute("myCustomerDto") CustomerDto customerDto,
-                               @SessionAttribute("price") double price, Model model){
+                               @SessionAttribute("price") double price, Model model) {
         logger.info("...payment by account balance...");
         //TODO
-        if (customerDto.getBalance()<price){
+        if (customerDto.getBalance() < price) {
             logger.warn("...low balance...");
-            model.addAttribute("message",maktabMessageSource.getEnglish("account.balance.low"));
+            model.addAttribute("message", maktabMessageSource.getEnglish("account.balance.low"));
             return "customerPaymentInformations";
         }
-        customerService.payByAccount(customerDto,price);
-        model.addAttribute("success",maktabMessageSource.getEnglish("tanks.for.payment"));
+        customerService.payByAccount(customerDto, price);
+        model.addAttribute("success", maktabMessageSource.getEnglish("tanks.for.payment"));
         return ("customerSuccessPage");
     }
 
-  @PostMapping("/complete")
-  public String save(@ModelAttribute("paymentDto") @Valid PaymentDto paymentDto,
-                     @SessionAttribute("price")double price,
-                     @SessionAttribute("customerOrderDto")CustomerOrderDto customerOrderDto,
-                     @SessionAttribute("myCustomerDto") CustomerDto customerDto,
-                     HttpSession session, HttpServletRequest request,
-                     Model model) throws OrderNotFoundException {
-      logger.info("...complete payment transaction...");
+    @PostMapping("/complete")
+    public String save(@ModelAttribute("paymentDto") @Valid PaymentDto paymentDto,
+                       @SessionAttribute("price") double price,
+                       @SessionAttribute("customerOrderDto") CustomerOrderDto customerOrderDto,
+                       @SessionAttribute("myCustomerDto") CustomerDto customerDto,
+                       HttpSession session, HttpServletRequest request,
+                       Model model) throws OrderNotFoundException {
+        logger.info("...complete payment transaction...");
         String captcha = session.getAttribute("captcha_security").toString();
         String verifyCaptcha = request.getParameter("captcha");
         if (captcha.equals(verifyCaptcha)) {
             model.addAttribute("success", maktabMessageSource.getEnglish("transaction.commit"));
+//            model.addAttribute("money", maktabMessageSource.getEnglish("current.balance",new Object[]{customerDto.getBalance()}));
             customerOrderService.updateOrderStatus(customerOrderDto.setOrderStatus(OrderStatus.PAID));
-
-            specialistService.returnMoney(price,customerOrderDto.getSpecialistDto());
+            specialistService.returnMoney(price, customerOrderDto.getSpecialistDto());
+            paymentService.save(paymentDto);
             return "customerSuccessPage";
         } else {
             model.addAttribute("error", maktabMessageSource.getEnglish("captcha.invalid"));
@@ -84,21 +88,24 @@ public class PaymentController {
     }
 
     @GetMapping("/timeout")
-    public String redirect(){
+    public String redirect() {
         logger.warn("...payment timeout...");
         return "timeOut";
     }
+
     @PostMapping("/increaseBalance")
-    public String increaseBalance(@SessionAttribute("balance")double balance,
-                                  @SessionAttribute("myCustomerDto") CustomerDto customerDto, Model model){
+    public String increaseBalance(@ModelAttribute("paymentDto") @Valid PaymentDto paymentDto, @SessionAttribute("balance") double balance,
+                                  @SessionAttribute("myCustomerDto") CustomerDto customerDto, Model model) {
         logger.info("....pay by account balance....");
-        customerDto.setBalance(customerDto.getBalance()+balance);
-        customerService.updateBalance(customerDto.getBalance(),customerDto.getId());
-        model.addAttribute("money",maktabMessageSource.getEnglish("balance.increase"));
+        customerDto.setBalance(customerDto.getBalance() + balance);
+        customerService.updateBalance(customerDto.getBalance(), customerDto.getId());
+        model.addAttribute("success", maktabMessageSource.getEnglish("balance.increase"));
+        model.addAttribute("money", maktabMessageSource.getEnglish("current.balance.increase", new Object[]{customerDto.getBalance()}));
         return "customerSuccessPage";
     }
+
     @GetMapping("/balanceTimeout")
-    public String balanceTimeout(){
+    public String balanceTimeout() {
         logger.warn("...payment timeout...");
         return "balanceTimeout";
     }
