@@ -1,5 +1,6 @@
 package ir.maktab.homeservices.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import ir.maktab.homeservices.data.entity.enums.UserStatus;
 import ir.maktab.homeservices.dto.enums.UserRole;
 import ir.maktab.homeservices.service.validation.*;
@@ -10,7 +11,8 @@ import java.util.Date;
 public class UserDto {
 
     private Integer id;
-    //    @ValidPassword(groups = {OnRegister.class, OnLogin.class, OnChangePassword.class})
+    @NotNull(message = "username.not.blank")
+    @Size(min = 2, max = 30,message = "username.length")
     private String username;
     @ValidPassword(groups = {OnRegister.class, OnLogin.class, OnChangePassword.class})
     private String password;
@@ -25,11 +27,11 @@ public class UserDto {
     private String email;
 
     private UserStatus userStatus;
-
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date date;
     @NotNull(message = "balance.not.blank", groups = {OnIncreaseBalance.class})
     @Pattern(regexp = "^[0-9]", message = "balance.must.be.int")
-    private double Balance;
+    private Double Balance;
 
     private UserRole userRole;
 
