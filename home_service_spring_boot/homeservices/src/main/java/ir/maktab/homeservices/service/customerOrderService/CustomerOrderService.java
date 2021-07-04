@@ -20,4 +20,6 @@ public interface CustomerOrderService {
     void updateOrderStatusAndPriceAndSpecialist(CustomerOrderDto orderDto) throws OrderNotFoundException;
     List<CustomerOrderDto> findUserByStatusAndCustomer(OrderStatus orderStatus, CustomerDto customerDto) throws OrderNotFoundException;
     void updateComment(Integer orderId, CustomerCommentDto customerCommentDto);
+
+    List<CustomerOrderDto> findByServiceAndStatus(ServiceCategoryDto s, OrderStatus orderStatus);
 }
