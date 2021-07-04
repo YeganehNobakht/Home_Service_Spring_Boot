@@ -13,7 +13,7 @@ public class PaymentDto {
     @Pattern(regexp = "[1-9][0-9]{15}",message = "card.number")
     private String cardNumber;
     @NotBlank(message = "cvv2.blank")
-    @Pattern(regexp = "[0-9]{4}",message = "cvv2")
+    @Pattern(regexp = "^[0-9]{3,4}$",message = "cvv2")
     private String ccv2;
     @NotBlank(message = "month.blank")
     @Size(min = 1, max = 12, message = "month.size")
