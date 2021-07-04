@@ -4,11 +4,9 @@ package ir.maktab.homeservices.service.suggestionService;
 import ir.maktab.homeservices.data.entity.Suggestion;
 import ir.maktab.homeservices.data.entity.enums.OrderStatus;
 import ir.maktab.homeservices.data.entity.enums.SuggestionStatus;
+import ir.maktab.homeservices.data.repository.specification.Specifications;
 import ir.maktab.homeservices.data.repository.suggestion.SuggestionRepository;
-import ir.maktab.homeservices.dto.CustomerOrderDto;
-import ir.maktab.homeservices.dto.SpecialistDto;
-import ir.maktab.homeservices.dto.SubCategoryDto;
-import ir.maktab.homeservices.dto.SuggestionDto;
+import ir.maktab.homeservices.dto.*;
 import ir.maktab.homeservices.exceptions.checkes.*;
 import ir.maktab.homeservices.service.customerOrderService.CustomerOrderService;
 import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
@@ -16,8 +14,10 @@ import ir.maktab.homeservices.service.mapper.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,22 +36,24 @@ public class SuggestionServiceImpl implements SuggestionService {
     }
 
     @Override
-    public void addSuggestionForOrder(SuggestionDto suggestionDto, CustomerOrderDto orderDto) throws TooLowSubServicePriceException {
+    public void addSuggestionForOrder(SuggestionDto suggestionDto, CustomerOrderDto orderDto) throws TooLowSubServicePriceException, OrderNotFoundException {
         SubCategoryDto subCategory = orderDto.getSubCategory();
-        if (subCategory.getPrice() > suggestionDto.getPrice())
+        if (subCategory.getPrice() >= suggestionDto.getPrice())
             throw new TooLowSubServicePriceException(maktabMessageSource.getEnglish("subService.price.low", new Object[]{subCategory.getPrice()}));
+        orderDto.setOrderStatus(OrderStatus.WAITING_FOR_SPECIALIST_CHOSE);
+        customerOrderService.updateOrderStatus(orderDto);
         suggestionRepository.save(mapper.toSuggestion(suggestionDto));
     }
 
     @Override
     public List<SuggestionDto> filterSuggestion(SuggestionDto suggestionDto) {
-        List<Suggestion> all = suggestionRepository.findAll(SuggestionRepository.filterSuggestion(mapper.toSuggestion(suggestionDto)));
+        List<Suggestion> all = suggestionRepository.findAll(Specifications.filterSuggestion(mapper.toSuggestion(suggestionDto)));
         return all.stream().map(mapper::toSuggestionDto).collect(Collectors.toList());
     }
 
     @Override
     public List<SuggestionDto> findByCustomerOrder(CustomerOrderDto order) throws OrderNoSuggestionException, OrderException {
-        if (order.getOrderStatus().equals(OrderStatus.WAITING_FOR_SPECIALIST_OFFER)) {
+        if (order.getOrderStatus().equals(OrderStatus.WAITING_FOR_SPECIALIST_CHOSE)) {
             List<Suggestion> suggestions = suggestionRepository.findByCustomerOrder_Id(order.getId());
             if (suggestions.size() == 0)
                 throw new OrderNoSuggestionException(maktabMessageSource.getEnglish("no.suggestion", new Object[]{order.getId()}));
@@ -119,9 +121,25 @@ public class SuggestionServiceImpl implements SuggestionService {
                     updateStatus(s.getId(), SuggestionStatus.REJECTED);
                 }
             }
-            orderDto.setOrderStatus(OrderStatus.WAITING_FOR_SPECIALIST_CHOSE).setPrice(suggestion.get().getPrice());
+            orderDto.setOrderStatus(OrderStatus.WAITING_FOR_SPECIALIST_COME).setPrice(suggestion.get().getPrice());
             customerOrderService.updateOrderStatusAndPriceAndSpecialist(orderDto);
         } else
             throw new SuggestionNotFoundException(maktabMessageSource.getEnglish("suggestion.not.found", new Object[]{id}));
+    }
+
+    @Override
+    public Set<CustomerOrderDto> showOrderWaitForOffer(SpecialistDto specialistDto) {
+        Set<CustomerOrderDto> orderDtoList = new HashSet<>();
+        List<ServiceCategoryDto> serviceCategoryDtoList = specialistDto.getServiceCategoryList();
+        for (ServiceCategoryDto s : serviceCategoryDtoList) {
+            List<CustomerOrderDto> order = customerOrderService.findByServiceAndStatus(s, OrderStatus.WAITING_FOR_SPECIALIST_OFFER);
+            List<CustomerOrderDto> order1 = customerOrderService.findByServiceAndStatus(s, OrderStatus.WAITING_FOR_SPECIALIST_CHOSE);
+            order.addAll(order1);
+            for (CustomerOrderDto o : order) {
+                if (findBySpecialist_IdAndOrderId(specialistDto.getId(), o.getId()) == null)
+                    orderDtoList.add(o);
+            }
+        }
+        return orderDtoList;
     }
 }
