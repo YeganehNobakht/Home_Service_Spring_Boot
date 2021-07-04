@@ -10,6 +10,7 @@ import ir.maktab.homeservices.dto.SpecialistDto;
 import ir.maktab.homeservices.dto.SpecialistSignUpDto;
 import ir.maktab.homeservices.exceptions.checkes.DuplicateEmailException;
 import ir.maktab.homeservices.exceptions.checkes.DuplicateUsernameException;
+import ir.maktab.homeservices.exceptions.checkes.PasswordNotFoundException;
 import ir.maktab.homeservices.exceptions.checkes.SpecialistNotFoundException;
 import ir.maktab.homeservices.service.maktabMassageSource.MaktabMessageSource;
 import ir.maktab.homeservices.service.mapper.Mapper;
@@ -46,35 +47,6 @@ public class SpecialistServiceImpl implements SpecialistService {
     }
 
 
-    @Transactional
-    @Override
-    public SpecialistDto create(SpecialistSignUpDto specialistSignUpDto) throws DuplicateUsernameException, DuplicateEmailException {
-        SpecialistDto specialistDto = new SpecialistDto()
-                .setName(specialistSignUpDto.getName())
-                .setEmail(specialistSignUpDto.getEmail())
-                .setLastName(specialistSignUpDto.getLastName())
-                .setUsername(specialistSignUpDto.getUsername())
-                .setPassword(specialistSignUpDto.getPassword())
-                .setProfilePicture(specialistSignUpDto.getProfilePicture())
-                .setUserStatus(UserStatus.WAITING);
-
-
-        Optional<Specialist> specialist1 = specialistRepository.findByUsername(specialistDto.getUsername());
-        if (specialist1.isPresent()) {
-            throw new DuplicateUsernameException(maktabMessageSource.getEnglish("duplicate.username"));
-        } else {
-            Optional<Specialist> specialist2 = specialistRepository.findByEmail(specialistDto.getEmail());
-            if (specialist2.isPresent()) {
-                throw new DuplicateEmailException(maktabMessageSource.getEnglish("duplicate.email"));
-            } else {
-                Specialist specialist = specialistRepository.save(mapper.toSpecialist(specialistDto));
-                specialist.getServiceCategoryList().add(mapper.toServiceCategory(specialistSignUpDto.getServiceCategory()));
-                specialistRepository.save(specialist);
-                return mapper.toSpecialistDto(specialist);
-            }
-        }
-    }
-
     @Override
     public void delete(Integer id) {
         specialistRepository.deleteById(id);
@@ -98,10 +70,11 @@ public class SpecialistServiceImpl implements SpecialistService {
         specialistDto.setPassword(encodedPassword);
 
         String randomCode = RandomString.make(64);
-        specialistDto.setVerificationCode(randomCode);
-        specialistDto.setEnabled(false);
+        specialistDto.setVerificationCode(randomCode).setEnabled(false).setUserStatus(UserStatus.NEW);
+        Specialist specialist = specialistRepository.save(mapper.toSpecialist(specialistDto));
+        specialist.getServiceCategoryList().add(mapper.toServiceCategory(specialistSignUpDto.getServiceCategory()));
+        specialistRepository.save(specialist);
 
-        specialistRepository.save(mapper.toSpecialist(specialistDto));
         userService.sendVerificationEmail(specialistDto, siteURL);
         return specialistDto;
 
@@ -109,20 +82,18 @@ public class SpecialistServiceImpl implements SpecialistService {
 
 
     @Override
-    public SpecialistDto findDuplicateEmail(String email) throws DuplicateEmailException {
+    public void findDuplicateEmail(String email) throws DuplicateEmailException {
         Optional<Specialist> specialist = specialistRepository.findByEmail(email);
         if (specialist.isPresent())
             throw new DuplicateEmailException(maktabMessageSource.getEnglish("duplicate.email"));
-        return null;
 
     }
 
     @Override
-    public SpecialistDto findDuplicateUsername(String username) throws DuplicateUsernameException {
+    public void findDuplicateUsername(String username) throws DuplicateUsernameException {
         Optional<Specialist> specialist = specialistRepository.findByUsername(username);
         if (specialist.isPresent())
             throw new DuplicateUsernameException(maktabMessageSource.getEnglish("duplicate.username"));
-        return null;
 
     }
 
@@ -130,7 +101,6 @@ public class SpecialistServiceImpl implements SpecialistService {
     @Override
     public void update(SpecialistDto specialistDto) throws SpecialistNotFoundException {
         if (specialistRepository.findById(specialistDto.getId()).isPresent()) {
-            //using save method for update
             specialistRepository.save(mapper.toSpecialist(specialistDto));
         } else
             throw new SpecialistNotFoundException(maktabMessageSource.getEnglish("specialist.not.found", new Object[]{specialistDto.getId()}));
@@ -197,6 +167,25 @@ public class SpecialistServiceImpl implements SpecialistService {
     public List<SpecialistDto> findAll() {
         List<Specialist> specialistList = specialistRepository.findAll();
         return specialistList.stream().map(mapper::toSpecialistDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public void changePassword(SpecialistDto specialistDto, String oldPass, String newPass) throws PasswordNotFoundException {
+        userService.checkForChangePassword(specialistDto, oldPass, newPass);
+    }
+
+    @Override
+    public boolean checkforStatus(SpecialistDto dto) {
+        if (dto.getUserStatus().equals(UserStatus.APPROVE))
+            return true;
+        return false;
+    }
+
+    @Override
+    public List<SpecialistDto> findApproveSpecialist() {
+        List<Specialist> all = specialistRepository.findAll();
+        all.removeIf(specialist -> specialist.getUserStatus().equals(UserStatus.WAITING));
+        return all.stream().map(mapper::toSpecialistDto).collect(Collectors.toList());
     }
 
 
